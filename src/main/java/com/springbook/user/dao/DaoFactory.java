@@ -10,7 +10,7 @@ import javax.sql.DataSource;
 public class DaoFactory {
     
     @Bean
-    public UserDao userDao() {
+    public UserDao userDao() throws ClassNotFoundException {
         UserDao userDao = new UserDao();
         userDao.setDataSource(dataSource());
         return userDao;
@@ -35,9 +35,11 @@ public class DaoFactory {
     */
 
     @Bean
-    public DataSource dataSource() {
+    public DataSource dataSource() throws ClassNotFoundException {
+        Class driverClass = Class.forName("com.mysql.cj.jdbc.Driver");
+
         SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
-        dataSource.setDriverClass(com.mysql.cj.jdbc.Driver.class);
+        dataSource.setDriverClass(driverClass);
         dataSource.setUrl("jdbc:mysql://localhost/springbook");
         dataSource.setUsername("spring");
         dataSource.setPassword("book");
