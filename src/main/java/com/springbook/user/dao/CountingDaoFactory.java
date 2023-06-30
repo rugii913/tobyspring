@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CountingDaoFactory {
 
+/*
+    //컴파일 오류 방지 주석 처리
     @Bean
     public UserDao userDao() {
         UserDao userDao = new UserDao();
@@ -22,4 +24,5 @@ public class CountingDaoFactory {
     public ConnectionMaker realConnectionMaker() {
         return new DConnectionMaker();
     }
+    */
 }
