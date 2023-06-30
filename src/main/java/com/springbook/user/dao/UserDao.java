@@ -7,12 +7,36 @@ import java.sql.*;
 public class UserDao {
 
     private ConnectionMaker connectionMaker; //인터페이스를 통해 오브젝트에 접근하므로 구체적인 클래스 정보를 알 필요가 없다.
+    private Connection c;
+    private User user;
 
     public UserDao(ConnectionMaker connectionMaker) {
         this.connectionMaker = connectionMaker; //리스트 1-10과 비교하여 UserDao를 사용하는 클라이언트 코드에서 ConnectionMaker를 주입한다.
     }
 
-    public void add(User user) throws ClassNotFoundException, SQLException {
+    public User get(String id) throws ClassNotFoundException, SQLException {
+        this.c = connectionMaker.makeConnection();
+
+        PreparedStatement ps = c.prepareStatement(
+                "select * from users where id = ?");
+        ps.setString(1, id);
+
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+
+        this.user = new User();
+        this.user.setId(rs.getString("id"));
+        this.user.setName(rs.getString("name"));
+        this.user.setPassword(rs.getString("password"));
+
+        rs.close();
+        ps.close();
+        c.close();
+
+        return this.user;
+    }
+
+    /*public void add(User user) throws ClassNotFoundException, SQLException {
         Connection c = connectionMaker.makeConnection();
 
         PreparedStatement ps = c.prepareStatement(
@@ -46,5 +70,5 @@ public class UserDao {
         c.close();
 
         return user;
-    }
+    }*/
 }
