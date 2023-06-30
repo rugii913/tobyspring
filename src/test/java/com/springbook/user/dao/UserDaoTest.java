@@ -8,24 +8,31 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.SQLException;
 
+import static org.assertj.core.api.Assertions.*;
+
 class UserDaoTest {
 
-    @Test //JUnit에게 테스트용 메서드임을 알려준다.
+    @Test
     void addAndGet() throws SQLException {
         ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
 
         UserDao dao = context.getBean("userDao", UserDao.class);
+
+        dao.deleteAll();
+        assertThat(dao.getCount()).isEqualTo(0);
+
         User user = new User();
         user.setId("gyumee");
         user.setName("박성철");
         user.setPassword("springno1");
 
         dao.add(user);
+        assertThat(dao.getCount()).isEqualTo(1);
 
         User user2 = dao.get(user.getId());
 
-        Assertions.assertThat(user2.getName()).isEqualTo(user.getName());
-        Assertions.assertThat(user2.getPassword()).isEqualTo(user.getPassword());
+        assertThat(user2.getName()).isEqualTo(user.getName());
+        assertThat(user2.getPassword()).isEqualTo(user.getPassword());
     }
 
 }
