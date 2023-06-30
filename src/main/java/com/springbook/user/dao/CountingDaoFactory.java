@@ -8,7 +8,9 @@ public class CountingDaoFactory {
 
     @Bean
     public UserDao userDao() {
-        return new UserDao(connectionMaker());
+        UserDao userDao = new UserDao();
+        userDao.setConnectionMaker(connectionMaker()); //리스트 1-34 수정자 DI에 의해 변경
+        return userDao;
     }
 
     @Bean

@@ -8,7 +8,9 @@ public class DaoFactory {
     
     @Bean //--> 오브젝트 생성을 담당하는 IoC(Inversion of Control)용 메서드라는 표시
     public UserDao userDao() {
-        return new UserDao(connectionMaker());
+        UserDao userDao = new UserDao();
+        userDao.setConnectionMaker(connectionMaker()); //리스트 1-34 수정자 DI에 의해 변경
+        return userDao;
     }
 
     @Bean
