@@ -27,5 +27,5 @@ class UserDaoTest {
         Assertions.assertThat(user2.getName()).isEqualTo(user.getName());
         Assertions.assertThat(user2.getPassword()).isEqualTo(user.getPassword());
     }
-
+    //커밋 메시지 일부 누락
 }
