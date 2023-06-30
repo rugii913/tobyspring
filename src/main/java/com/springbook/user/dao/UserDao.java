@@ -5,10 +5,19 @@ import com.springbook.user.domain.User;
 import java.sql.*;
 
 public class UserDao {
-    private ConnectionMaker connectionMaker; //인터페이스를 통해 오브젝트에 접근하므로 구체적인 클래스 정보를 알 필요가 없다.
+    /*private ConnectionMaker connectionMaker; //인터페이스를 통해 오브젝트에 접근하므로 구체적인 클래스 정보를 알 필요가 없다.
 
     public UserDao(ConnectionMaker connectionMaker) {
         this.connectionMaker = connectionMaker; //리스트 1-10과 비교하여 UserDao를 사용하는 클라이언트 코드에서 ConnectionMaker를 주입한다.
+    }*/
+
+    private static UserDao INSTANCE;
+
+    private ConnectionMaker connectionMaker;
+
+    public static synchronized UserDao getInstance() {
+        if (INSTANCE == null) INSTANCE = new UserDao();
+        return INSTANCE;
     }
 
     public void add(User user) throws ClassNotFoundException, SQLException {
