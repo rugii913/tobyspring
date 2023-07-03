@@ -9,7 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserDao {
+public abstract class UserDao {
 
     private DataSource dataSource;
 
@@ -42,8 +42,7 @@ public class UserDao {
         ResultSet rs = ps.executeQuery();
 
         User user = null;
-        if (rs.next()) { // id를 조건으로 한 쿼리의 결과가 있으면 User 오브젝트를 만들고 값을 넣어준다.
-            // rs.next()를 if로 감싸주지 않으면, SqlException 발생
+        if (rs.next()) {
             user = new User();
             user.setId(rs.getString("id"));
             user.setName(rs.getString("name"));
@@ -55,7 +54,7 @@ public class UserDao {
         c.close();
 
         if (user == null) {
-            throw new EmptyResultDataAccessException(1); // expected 1, actual 0(empty)
+            throw new EmptyResultDataAccessException(1);
         }
 
         return user;
@@ -65,9 +64,9 @@ public class UserDao {
         Connection c = null;
         PreparedStatement ps = null;
 
-        try { // 예외가 발생할 가능성이 있는 코드를 모두 try 블록으로 묶어준다.
+        try {
             c = dataSource.getConnection();
-            ps = makeStatement(c); // 변하는 부분을 메서드로 추출하고 변하지 않는 부분에서 호출하도록 만들었다.
+            ps = makeStatement(c);
             ps.executeUpdate();
         } catch (SQLException e) {
             throw e;
@@ -87,11 +86,7 @@ public class UserDao {
         }
     }
 
-    private PreparedStatement makeStatement(Connection c) throws SQLException {
-        PreparedStatement ps;
-        ps = c.prepareStatement("delete from users");
-        return ps;
-    }
+    abstract protected PreparedStatement makeStatement(Connection c) throws SQLException;
 
     public int getCount() throws SQLException {
         Connection c = null;
