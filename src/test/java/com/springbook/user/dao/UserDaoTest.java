@@ -19,10 +19,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 //@SpringBootTest // -> 이걸 붙여서 해결해도 된다.
 @ExtendWith(SpringExtension.class) // -> SpringExtension integrates the Spring TestContext Framework into JUnit 5's Jupiter programming model.
-@ContextConfiguration(locations = "/applicationContext.xml")
+@ContextConfiguration(locations = "/test-applicationContext.xml")
 // -> @ExtendWith와 @ContextConfiguration 사용해서 어플리케이션 컨텍스트 관리 가능
 // cf. @RunWith deprecated - https://youngminz.netlify.app/posts/toby-spring-boot-in-2021
-@DirtiesContext // 테스트 메서드에서 어플리케이션 컨텍스트의 구성이나 상태를 변경한다는 것을 테스트 컨텍스트 프레임워크에 알려준다.
 class UserDaoTest {
 
     @Autowired // UserDao 타입 빈을 직접 DI 받는다.
@@ -37,13 +36,6 @@ class UserDaoTest {
         this.user1 = new User("gyumee", "박성철", "springno1");
         this.user2 = new User("leegw700", "이길원", "springno2");
         this.user3 = new User("bumjin", "박범진", "springno3");
-
-        DataSource dataSource // 테스트에서 UserDao가 사용할 DataSource 오브젝트를 직접 생성한다.
-                = new SingleConnectionDataSource("jdbc:mysql://localhost/testdb",
-                "spring",
-                "book",
-                true);
-        dao.setDataSource(dataSource);
     }
 
     @Test
