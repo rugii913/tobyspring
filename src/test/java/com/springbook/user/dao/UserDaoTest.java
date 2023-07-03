@@ -18,9 +18,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 //@SpringBootTest // -> 이걸 붙여서 해결해도 된다.
 @ExtendWith(SpringExtension.class) // -> SpringExtension integrates the Spring TestContext Framework into JUnit 5's Jupiter programming model.
 @ContextConfiguration(locations = "/applicationContext.xml")
-class UserDaoTest { // UserDaoTest를 Bean으로 만들지는 않았기 때문에 자동으로 주입받지 못하고, context에서 불러옴
-                    // -> @ExtendWith와 @ContextConfiguration 사용해서 어플리케이션 컨텍스트 관리 가능
-                    // cf. @RunWith deprecated - https://youngminz.netlify.app/posts/toby-spring-boot-in-2021
+// -> @ExtendWith와 @ContextConfiguration 사용해서 어플리케이션 컨텍스트 관리 가능
+// cf. @RunWith deprecated - https://youngminz.netlify.app/posts/toby-spring-boot-in-2021
+class UserDaoTest {
     // 테스트 오브젝트가 만들어지고 나면 스프링 테스트 컨텍스트에 의해 자동으로 값이 주입된다.
     @Autowired
     private ApplicationContext context;
@@ -38,6 +38,9 @@ class UserDaoTest { // UserDaoTest를 Bean으로 만들지는 않았기 때문�
         this.user1 = new User("gyumee", "박성철", "springno1");
         this.user2 = new User("leegw700", "이길원", "springno2");
         this.user3 = new User("bumjin", "박범진", "springno3");
+
+        System.out.println(this.context);
+        System.out.println(this);
     }
 
     @Test
