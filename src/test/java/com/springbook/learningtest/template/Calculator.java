@@ -26,7 +26,31 @@ public class Calculator {
         }
      }
 
-    /* // 이전의 calcSum 코드
+     public Integer lineReadTemplate(String filepath, LineCallback callback, int initVal) throws IOException {
+         // fileReadTemplate()과 비교
+         BufferedReader br = null;
+         
+         try {
+             br = new BufferedReader(new FileReader(filepath));
+             Integer res = initVal;
+             String line = null;
+             while ((line = br.readLine()) != null) {
+                 // doSomethingWithReader()에서 공통적인 부분을 더 빼냈다.
+                 res = callback.doSomethingWithLine(line, res);
+             }
+             return res;
+         } catch (IOException e) {
+             System.out.println(e.getMessage());
+             throw e;
+         } finally {
+             if (br != null) {
+                 try { br.close(); }
+                 catch (IOException e) { System.out.println(e.getMessage()); }
+             }
+         }
+     }
+
+    /* // calcSum 코드 (1)
     public Integer calcSum(String filepath) throws IOException {
 
         BufferedReader br = null;
@@ -51,6 +75,7 @@ public class Calculator {
     }
     */
 
+    /* // calcSum 코드 (2)
     public Integer calcSum(String filepath) throws IOException {
         return fileReadTemplate(filepath, bufferedReader -> {
             Integer sum = 0;
@@ -61,15 +86,14 @@ public class Calculator {
             return sum;
         });
     }
+    */
+
+    // calcSum 코드 (3)
+    public Integer calcSum(String filepath) throws IOException {
+        return lineReadTemplate(filepath, (line, value) -> value + Integer.valueOf(line), 0);
+    }
 
     public Integer calcMultiply(String filepath) throws IOException {
-        return fileReadTemplate(filepath, bufferedReader -> {
-            Integer multiply = 1;
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                multiply *= Integer.valueOf(line);
-            }
-            return multiply;
-        });
+        return lineReadTemplate(filepath, (line, value) -> value * Integer.valueOf(line), 1);
     }
 }
