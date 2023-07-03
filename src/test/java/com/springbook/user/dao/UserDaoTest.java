@@ -3,13 +3,8 @@ package com.springbook.user.dao;
 import com.springbook.user.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -17,25 +12,25 @@ import java.sql.SQLException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-//@SpringBootTest // -> 이걸 붙여서 해결해도 된다.
-@ExtendWith(SpringExtension.class) // -> SpringExtension integrates the Spring TestContext Framework into JUnit 5's Jupiter programming model.
-@ContextConfiguration(locations = "/test-applicationContext.xml")
-// -> @ExtendWith와 @ContextConfiguration 사용해서 어플리케이션 컨텍스트 관리 가능
-// cf. @RunWith deprecated - https://youngminz.netlify.app/posts/toby-spring-boot-in-2021
+// 스프링 컨테이너에서 UserDao가 동작함을 확인하는 것은 UserDaoTest의 기본적인 관심사가 아니다.
+
 class UserDaoTest {
 
-    @Autowired // UserDao 타입 빈을 직접 DI 받는다.
-    private UserDao dao;
-    // User 픽스처
+    private UserDao dao; // @Autowired 없음
     private User user1;
     private User user2;
     private User user3;
 
-    @BeforeEach // JUnit 제공 어노테이션, @Test 메서드가 실행되기 전에 먼저 실행돼야 하는 메서드를 정의
-    public void setUp() { // dao를 context에서 DL 하던 것 제거하고, 필드에서 바로 DI 받음
+    @BeforeEach
+    public void setUp() {
         this.user1 = new User("gyumee", "박성철", "springno1");
         this.user2 = new User("leegw700", "이길원", "springno2");
         this.user3 = new User("bumjin", "박범진", "springno3");
+
+        dao = new UserDao();
+        DataSource dataSource = new SingleConnectionDataSource(
+                "jdbc:mysql://localhost/testdb", "spring", "book", true);
+        dao.setDataSource(dataSource);
     }
 
     @Test
