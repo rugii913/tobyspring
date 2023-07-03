@@ -14,20 +14,25 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class UserDaoTest { // UserDaoTest를 Bean으로 만들지는 않았기 때문에 자동으로 주입받지 못하고, context에서 불러옴
 
-    private UserDao dao; // setUp() 메서드에서 만드는 객체를 테스트 메서드에서 사용할 수 있도록 인스턴스 변수로 선언
+    // setUp() 메서드에서 만드는 객체를 테스트 메서드에서 사용할 수 있도록 인스턴스 변수로 선언
+    private UserDao dao;
+    // User 픽스처
+    private User user1;
+    private User user2;
+    private User user3;
 
     @BeforeEach // JUnit 제공 어노테이션, @Test 메서드가 실행되기 전에 먼저 실행돼야 하는 메서드를 정의
     public void setUp() { // 각 테스트 메서드에 반복적으로 나타났던 dao를 가져오는 코드를 제거하고 별도의 메서드로 추출
         ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
         this.dao = context.getBean("userDao", UserDao.class);
+
+        this.user1 = new User("gyumee", "박성철", "springno1");
+        this.user2 = new User("leegw700", "이길원", "springno2");
+        this.user3 = new User("bumjin", "박범진", "springno3");
     }
 
     @Test
     void addAndGet() throws SQLException {
-        // 중복되지 않는 값을 가진 두 User 오브젝트를 준비
-        User user1 = new User("gyumee", "박성철", "springno1");
-        User user2 = new User("leegw700", "이길원", "springno2");
-
         dao.deleteAll();
         assertThat(dao.getCount()).isEqualTo(0);
 
@@ -49,10 +54,6 @@ class UserDaoTest { // UserDaoTest를 Bean으로 만들지는 않았기 때문�
 
     @Test
     public void count() throws SQLException {
-        User user1 = new User("gyumee", "박성철", "springno1");
-        User user2 = new User("leegw700", "이길원", "springno2");
-        User user3 = new User("bumjin", "박범진", "springno3");
-
         dao.deleteAll();
         assertThat(dao.getCount()).isEqualTo(0);
 
