@@ -19,7 +19,23 @@ public class UserDao {
 
     public void add(final User user) throws SQLException { // 변조를 막기 위해 final로 받아옴, final 없어도 동작에 문제 없음
 
-        StatementStrategy st = new StatementStrategy() { // 익명 내부 클래스는 구현할 인터페이스를 생성자처럼 이용해서 객체로 만든다.
+        // 인라인화 메서드 인자에서 바로 생성 - 굳이 st에 한 번 담을 필요가 없다.
+        jdbcContextWithStatementStrategy(
+                new StatementStrategy() {
+                    @Override
+                    public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+
+                        PreparedStatement ps
+                                = c.prepareStatement("insert into users(id, name, password) values(?,?,?)");
+                        ps.setString(1, user.getId());
+                        ps.setString(2, user.getName());
+                        ps.setString(3, user.getPassword());
+
+                        return ps;
+                    }
+                }
+        );
+/*        StatementStrategy st = new StatementStrategy() { // 익명 내부 클래스는 구현할 인터페이스를 생성자처럼 이용해서 객체로 만든다.
             @Override
             public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
 
@@ -32,7 +48,7 @@ public class UserDao {
             }
         };
 
-        jdbcContextWithStatementStrategy(st); // 생성자 파라미터로 user를 전달하지 않게 됐다.
+        jdbcContextWithStatementStrategy(st);*/
     }
 
     public User get(String id) throws SQLException {
