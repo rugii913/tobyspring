@@ -61,31 +61,32 @@ public class UserDao {
     }
 
     public void deleteAll() throws SQLException {
+        /* StatementStrategy st = new DeleteAllStatement(); // 선정한 전략 구현체 생성
+        jdbcContextWithStatementStrategy(st); // 컨텍스트 호출하며 전략 구현체 전달 */
+        jdbcContextWithStatementStrategy(new DeleteAllStatement()); // 인라인화
+        // 클라이언트가 컨텍스트가 사용할 전략을 정해서 전달한다는 점에서 DI라 볼 수 있음 
+        // 마이크로 DI - 클라이언트가 오브젝트 팩토리의 책임을 함께 지고 있음, DI의 장점을 단순화해서 IoC 컨테이너의 도움 없이 코드 내에서 적용
+    }
+
+    private void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
+        // 컨텍스트에 해당하는 부분이 메서드로 분리된 것 // 아직 클래스를 분리하진 않았고, 메서드로 분리되었다.
+        // stmt == 클라이언트가 컨텍스트를 호출할 때 넘겨줄 전략 파라미터
         Connection c = null;
         PreparedStatement ps = null;
 
         try {
             c = dataSource.getConnection();
 
-            StatementStrategy strategy = new DeleteAllStatement(); // 전략 패턴을 적용한 것 같지만, 구체 클래스가 명시되어 있음 -> OCP 위반
-            ps = strategy.makePreparedStatement(c);
+//            StatementStrategy strategy = new DeleteAllStatement(); // 컨텍스트가 사용할 전략을 클라이언트가 생성 후 주입한다.
+//            ps = strategy.makePreparedStatement(c);
+            ps = stmt.makePreparedStatement(c);
 
             ps.executeUpdate();
         } catch (SQLException e) {
             throw e;
         } finally {
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException e) {
-                }
-            }
-            if (c != null) {
-                try {
-                    c.close();
-                } catch (SQLException e) {
-                }
-            }
+            if (ps != null) { try { ps.close(); } catch (SQLException e) {} }
+            if (c != null) { try { c.close(); } catch (SQLException e) {} }
         }
     }
 
