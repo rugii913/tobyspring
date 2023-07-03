@@ -18,6 +18,25 @@ public class UserDao {
     }
 
     public void add(User user) throws SQLException {
+        class AddStatement implements StatementStrategy { // add() 메서드 내부에 선언된 로컬 클래스
+            User user;
+
+            public AddStatement(User user) {
+                this.user = user;
+            }
+
+            @Override
+            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+                // AddStatement의 생성자로부터 User 정보를 제공받아서 데이터를 사용
+                PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?,?,?)");
+                ps.setString(1, user.getId());
+                ps.setString(2, user.getName());
+                ps.setString(3, user.getPassword());
+
+                return ps;
+            }
+        }
+
         jdbcContextWithStatementStrategy(new AddStatement(user));
     }
 
