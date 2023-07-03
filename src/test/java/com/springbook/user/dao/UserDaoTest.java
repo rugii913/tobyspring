@@ -21,10 +21,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 // -> @ExtendWith와 @ContextConfiguration 사용해서 어플리케이션 컨텍스트 관리 가능
 // cf. @RunWith deprecated - https://youngminz.netlify.app/posts/toby-spring-boot-in-2021
 class UserDaoTest {
-    // 테스트 오브젝트가 만들어지고 나면 스프링 테스트 컨텍스트에 의해 자동으로 값이 주입된다.
-    @Autowired
-    private ApplicationContext context;
-    // setUp() 메서드에서 만드는 객체를 테스트 메서드에서 사용할 수 있도록 인스턴스 변수로 선언
+
+    @Autowired // UserDao 타입 빈을 직접 DI 받는다.
     private UserDao dao;
     // User 픽스처
     private User user1;
@@ -32,14 +30,11 @@ class UserDaoTest {
     private User user3;
 
     @BeforeEach // JUnit 제공 어노테이션, @Test 메서드가 실행되기 전에 먼저 실행돼야 하는 메서드를 정의
-    public void setUp() { // 각 테스트 메서드에 반복적으로 나타났던 dao를 가져오는 코드를 제거하고 별도의 메서드로 추출
-        this.dao = context.getBean("userDao", UserDao.class);
-
+    public void setUp() { // dao를 context에서 DL 하던 것 제거하고, 필드에서 바로 DI 받음
         this.user1 = new User("gyumee", "박성철", "springno1");
         this.user2 = new User("leegw700", "이길원", "springno2");
         this.user3 = new User("bumjin", "박범진", "springno3");
 
-        System.out.println(this.context);
         System.out.println(this);
     }
 
