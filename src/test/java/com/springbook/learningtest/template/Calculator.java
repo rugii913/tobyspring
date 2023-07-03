@@ -61,4 +61,15 @@ public class Calculator {
             return sum;
         });
     }
+
+    public Integer calcMultiply(String filepath) throws IOException {
+        return fileReadTemplate(filepath, bufferedReader -> {
+            Integer multiply = 1;
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                multiply *= Integer.valueOf(line);
+            }
+            return multiply;
+        });
+    }
 }
