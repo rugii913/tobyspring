@@ -6,6 +6,27 @@ import java.io.IOException;
 
 public class Calculator {
 
+     public Integer fileReadTemplate(String filepath, BufferedReaderCallback callback) throws IOException {
+        // 이전의 calcSum과 거의 같다. 달라지는 부분만 체크
+        BufferedReader br = null;
+
+        try {
+            br = new BufferedReader(new FileReader(filepath));
+            int ret = callback.doSomethingWithReader(br);
+            // -> 콜백 오브젝트 호출, 템플릿에서 만든 컨텍스트 정보인 BufferedReader를 전달해주고 콜백의 작업 결과를 받아둔다.
+            return ret;
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            throw e;
+        } finally {
+            if (br != null) {
+                try { br.close(); }
+                catch (IOException e) { System.out.println(e.getMessage()); }
+            }
+        }
+     }
+
+    /* // 이전의 calcSum 코드
     public Integer calcSum(String filepath) throws IOException {
 
         BufferedReader br = null;
@@ -27,5 +48,17 @@ public class Calculator {
                 catch (IOException e) { System.out.println(e.getMessage()); }
             }
         }
+    }
+    */
+
+    public Integer calcSum(String filepath) throws IOException {
+        return fileReadTemplate(filepath, bufferedReader -> {
+            Integer sum = 0;
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sum += Integer.valueOf(line);
+            }
+            return sum;
+        });
     }
 }
