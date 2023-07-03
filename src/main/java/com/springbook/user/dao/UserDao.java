@@ -19,36 +19,17 @@ public class UserDao {
 
     public void add(final User user) throws SQLException { // 변조를 막기 위해 final로 받아옴, final 없어도 동작에 문제 없음
 
-        // 인라인화 메서드 인자에서 바로 생성 - 굳이 st에 한 번 담을 필요가 없다.
-        jdbcContextWithStatementStrategy(
-                new StatementStrategy() {
-                    @Override
-                    public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+        jdbcContextWithStatementStrategy( // 이 메서드의 인자로 들어갈 StatementStrategy를 람다식으로 구현
+                (connection) -> {
+                    PreparedStatement ps
+                            = connection.prepareStatement("insert into users(id, name, password) values(?,?,?)");
+                    ps.setString(1, user.getId());
+                    ps.setString(2, user.getName());
+                    ps.setString(3, user.getPassword());
 
-                        PreparedStatement ps
-                                = c.prepareStatement("insert into users(id, name, password) values(?,?,?)");
-                        ps.setString(1, user.getId());
-                        ps.setString(2, user.getName());
-                        ps.setString(3, user.getPassword());
-
-                        return ps;
-                    }
+                    return ps;
                 }
         );
-/*        StatementStrategy st = new StatementStrategy() { // 익명 내부 클래스는 구현할 인터페이스를 생성자처럼 이용해서 객체로 만든다.
-            @Override
-            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-
-                PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?,?,?)");
-                ps.setString(1, user.getId());
-                ps.setString(2, user.getName());
-                ps.setString(3, user.getPassword());
-
-                return ps;
-            }
-        };
-
-        jdbcContextWithStatementStrategy(st);*/
     }
 
     public User get(String id) throws SQLException {
