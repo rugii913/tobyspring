@@ -17,20 +17,27 @@ class UserDaoTest {
     void addAndGet() throws SQLException {
         ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
 
-        UserDao dao = context.getBean("userDao", UserDao.class);
+        UserDao dao = context.getBean("userDao", UserDao.class); // 중복되지 않는 값을 가진 두 User 오브젝트를 준비
+        User user1 = new User("gyumee", "박성철", "springno1");
+        User user2 = new User("leegw700", "이길원", "springno2");
 
         dao.deleteAll();
         assertThat(dao.getCount()).isEqualTo(0);
 
-        User user = new User("gyumee", "박성철", "springno1");
+        dao.add(user1);
+        dao.add(user2);
+        assertThat(dao.getCount()).isEqualTo(2);
 
-        dao.add(user);
-        assertThat(dao.getCount()).isEqualTo(1);
+        // 첫 번째 User의 id로 get()을 실행하면,
+        // 첫 번째 User의 값을 가진 오브젝트를 돌려주는지 확인
+        User userget1 = dao.get(user1.getId());
+        assertThat(userget1.getName()).isEqualTo(user1.getName());
+        assertThat(userget1.getPassword()).isEqualTo(user1.getPassword());
 
-        User user2 = dao.get(user.getId());
-
-        assertThat(user2.getName()).isEqualTo(user.getName());
-        assertThat(user2.getPassword()).isEqualTo(user.getPassword());
+        // 두 번째 User도 같은 방법으로 검증
+        User userget2 = dao.get(user2.getId());
+        assertThat(userget2.getName()).isEqualTo(user2.getName());
+        assertThat(userget2.getPassword()).isEqualTo(user2.getPassword());
     }
 
     @Test
@@ -50,7 +57,7 @@ class UserDaoTest {
 
         dao.add(user2);
         assertThat(dao.getCount()).isEqualTo(2);
-        
+
         dao.add(user3);
         assertThat(dao.getCount()).isEqualTo(3);
     }
