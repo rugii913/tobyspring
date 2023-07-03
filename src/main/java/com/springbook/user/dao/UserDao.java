@@ -67,7 +67,7 @@ public class UserDao {
 
         try { // 예외가 발생할 가능성이 있는 코드를 모두 try 블록으로 묶어준다.
             c = dataSource.getConnection();
-            ps = c.prepareStatement("delete from users"); // -> 변하는 부분
+            ps = makeStatement(c); // 변하는 부분을 메서드로 추출하고 변하지 않는 부분에서 호출하도록 만들었다.
             ps.executeUpdate();
         } catch (SQLException e) {
             throw e;
@@ -85,6 +85,12 @@ public class UserDao {
                 }
             }
         }
+    }
+
+    private PreparedStatement makeStatement(Connection c) throws SQLException {
+        PreparedStatement ps;
+        ps = c.prepareStatement("delete from users");
+        return ps;
     }
 
     public int getCount() throws SQLException {
