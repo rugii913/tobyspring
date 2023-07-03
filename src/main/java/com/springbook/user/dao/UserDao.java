@@ -53,26 +53,6 @@ public class UserDao {
         jdbcContextWithStatementStrategy(new DeleteAllStatement());
     }
 
-    private void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
-        // 컨텍스트에 해당하는 부분이 메서드로 분리된 것 // 아직 클래스를 분리하진 않았고, 메서드로 분리되었다.
-        // stmt == 클라이언트가 컨텍스트를 호출할 때 넘겨줄 전략 파라미터
-        Connection c = null;
-        PreparedStatement ps = null;
-
-        try {
-            c = dataSource.getConnection();
-
-            ps = stmt.makePreparedStatement(c); // 컨텍스트가 사용할 전략을 클라이언트가 생성 후 주입한다.
-
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (ps != null) { try { ps.close(); } catch (SQLException e) {} }
-            if (c != null) { try { c.close(); } catch (SQLException e) {} }
-        }
-    }
-
     public int getCount() throws SQLException {
         Connection c = null;
         PreparedStatement ps = null;
@@ -107,6 +87,26 @@ public class UserDao {
                 } catch (SQLException e) {
                 }
             }
+        }
+    }
+
+    private void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
+        // 컨텍스트에 해당하는 부분이 메서드로 분리된 것 // 아직 클래스를 분리하진 않았고, 메서드로 분리되었다.
+        // stmt == 클라이언트가 컨텍스트를 호출할 때 넘겨줄 전략 파라미터
+        Connection c = null;
+        PreparedStatement ps = null;
+
+        try {
+            c = dataSource.getConnection();
+
+            ps = stmt.makePreparedStatement(c); // 컨텍스트가 사용할 전략을 클라이언트가 생성 후 주입한다.
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if (ps != null) { try { ps.close(); } catch (SQLException e) {} }
+            if (c != null) { try { c.close(); } catch (SQLException e) {} }
         }
     }
 }
