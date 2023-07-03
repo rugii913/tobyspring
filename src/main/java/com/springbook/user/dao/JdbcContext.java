@@ -31,4 +31,11 @@ public class JdbcContext {
             if (c != null) { try { c.close(); } catch (SQLException e) {} }
         }
     }
+
+    // 콜백에서 재사용할 수 있는 부분을 UserDao -> JdbcContext로 위치 변경, 모든 DAO 메서드에서 executeSql() 메서드를 사용할 수 있게 됨
+    public void executeSql(final String query) throws SQLException { // 바인딩할 파라미터 없이 SQL만 전달하면 되는 경우
+        workWithStatementStrategy(
+                (connection) -> connection.prepareStatement(query)
+        );
+    }
 }

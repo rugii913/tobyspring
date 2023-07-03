@@ -65,13 +65,7 @@ public class UserDao {
     }
 
     public void deleteAll() throws SQLException {
-        executeSql("delete from users"); // 변하는 SQL 문장
-    }
-
-    private void executeSql(final String query) throws SQLException { // 바인딩할 파라미터 없이 SQL만 전달하면 되는 경우
-        this.jdbcContext.workWithStatementStrategy( // 변하지 않는 부분: 어떤 query를 넣은 람다식을 인자로 전달하여 메서드 실행
-                (connection) -> connection.prepareStatement(query)
-        );
+        this.jdbcContext.executeSql("delete from users");
     }
 
     public int getCount() throws SQLException {
