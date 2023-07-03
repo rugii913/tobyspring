@@ -18,18 +18,7 @@ public class UserDao {
     }
 
     public void add(User user) throws SQLException {
-        Connection c = dataSource.getConnection();
-
-        PreparedStatement ps = c.prepareStatement(
-                "insert into users(id, name, password) values(?,?,?)");
-        ps.setString(1, user.getId());
-        ps.setString(2, user.getName());
-        ps.setString(3, user.getPassword());
-
-        ps.executeUpdate();
-
-        ps.close();
-        c.close();
+        jdbcContextWithStatementStrategy(new AddStatement(user));
     }
 
     public User get(String id) throws SQLException {
@@ -61,11 +50,7 @@ public class UserDao {
     }
 
     public void deleteAll() throws SQLException {
-        /* StatementStrategy st = new DeleteAllStatement(); // 선정한 전략 구현체 생성
-        jdbcContextWithStatementStrategy(st); // 컨텍스트 호출하며 전략 구현체 전달 */
-        jdbcContextWithStatementStrategy(new DeleteAllStatement()); // 인라인화
-        // 클라이언트가 컨텍스트가 사용할 전략을 정해서 전달한다는 점에서 DI라 볼 수 있음 
-        // 마이크로 DI - 클라이언트가 오브젝트 팩토리의 책임을 함께 지고 있음, DI의 장점을 단순화해서 IoC 컨테이너의 도움 없이 코드 내에서 적용
+        jdbcContextWithStatementStrategy(new DeleteAllStatement());
     }
 
     private void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
@@ -77,9 +62,7 @@ public class UserDao {
         try {
             c = dataSource.getConnection();
 
-//            StatementStrategy strategy = new DeleteAllStatement(); // 컨텍스트가 사용할 전략을 클라이언트가 생성 후 주입한다.
-//            ps = strategy.makePreparedStatement(c);
-            ps = stmt.makePreparedStatement(c);
+            ps = stmt.makePreparedStatement(c); // 컨텍스트가 사용할 전략을 클라이언트가 생성 후 주입한다.
 
             ps.executeUpdate();
         } catch (SQLException e) {
