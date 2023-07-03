@@ -17,24 +17,6 @@ public class DaoFactory {
     }
 
     @Bean
-    public AccountDao accountDao() {
-        return new AccountDao(null);
-    }
-
-    @Bean
-    public MessageDao messageDao() {
-        return new MessageDao(null);
-    }
-
-    /*
-    //p.138 리스트 1-43 관련 주석 처리
-    @Bean
-    public ConnectionMaker connectionMaker() {
-        return new DConnectionMaker(); //분리해서 중복을 제거한 ConnectionMaker 타입 객체 생성 코드
-    }
-    */
-
-    @Bean
     public DataSource dataSource() throws ClassNotFoundException {
         Class driverClass = Class.forName("com.mysql.cj.jdbc.Driver");
 
