@@ -65,28 +65,22 @@ public class UserDao {
         Connection c = null;
         PreparedStatement ps = null;
 
-//        PreparedStatement ps = c.prepareStatement("delete from users");
-//        ps.executeUpdate(); // 여기서 예외가 발생하면 메서드 실행 중단 -> 리소스 반환되지 않음
         try { // 예외가 발생할 가능성이 있는 코드를 모두 try 블록으로 묶어준다.
             c = dataSource.getConnection();
-            ps = c.prepareStatement("delete from users");
+            ps = c.prepareStatement("delete from users"); // -> 변하는 부분
             ps.executeUpdate();
         } catch (SQLException e) {
-            // 예외가 발생했을 때 부가적인 작업을 해줄 수 있도록 catch 블록을 둔다.
-            // 아직은 예외를 다시 메서드 밖으로 던지기만 함
             throw e;
-        } finally { // finally이므로 try 블록에서 예외가 발생했을 때나 안 했을 때나 모두 실행된다.
+        } finally {
             if (ps != null) {
                 try {
                     ps.close();
                 } catch (SQLException e) {
-                    // ps.close() 메서드에서도 SQLException이 발생할 수 있기 때문에 이를 잡아줘야 한다.
-                    // 그렇지 않으면 Connection을 close() 하지 못하고 메서드를 빠져나갈 수 있다.
                 }
             }
             if (c != null) {
                 try {
-                    c.close(); // -> Connection 반환
+                    c.close();
                 } catch (SQLException e) {
                 }
             }
@@ -103,14 +97,14 @@ public class UserDao {
 
             ps = c.prepareStatement("select count(*) from users");
 
-            rs = ps.executeQuery(); // ResultSet도 다양한 SQLException이 발생할 수 있는 코드이므로 try 블록 안에 둬야 한다.
+            rs = ps.executeQuery();
             rs.next();
             return rs.getInt(1);
         } catch (SQLException e) {
             throw e;
         } finally {
             if (rs != null) {
-                try { // 만들어진 ResultSet을 닫아주는 기능. close()는 만들어진 순서의 반대로 하는 것이 원칙이다.
+                try {
                     rs.close();
                 } catch (SQLException e) {
                 }
