@@ -9,7 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public abstract class UserDao {
+public class UserDao {
 
     private DataSource dataSource;
 
@@ -66,7 +66,10 @@ public abstract class UserDao {
 
         try {
             c = dataSource.getConnection();
-            ps = makeStatement(c);
+
+            StatementStrategy strategy = new DeleteAllStatement(); // 전략 패턴을 적용한 것 같지만, 구체 클래스가 명시되어 있음 -> OCP 위반
+            ps = strategy.makePreparedStatement(c);
+
             ps.executeUpdate();
         } catch (SQLException e) {
             throw e;
@@ -85,8 +88,6 @@ public abstract class UserDao {
             }
         }
     }
-
-    abstract protected PreparedStatement makeStatement(Connection c) throws SQLException;
 
     public int getCount() throws SQLException {
         Connection c = null;
