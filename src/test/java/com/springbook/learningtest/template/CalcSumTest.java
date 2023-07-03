@@ -20,11 +20,16 @@ public class CalcSumTest {
 
     @Test
     void sumOfNumbers() throws IOException {
-        assertThat(calculator.calcSum(this.numFilepath)).isEqualTo(10);
+        assertThat(calculator.calcSum(this.numFilepath)).isEqualTo(15);
     }
 
     @Test
     void multiplyOfNumbers() throws IOException {
         assertThat(calculator.calcMultiply(this.numFilepath)).isEqualTo(120);
+    }
+
+    @Test
+    void concatenateOfNumbers() throws IOException {
+        assertThat(calculator.concatenate(this.numFilepath)).isEqualTo("12345");
     }
 }

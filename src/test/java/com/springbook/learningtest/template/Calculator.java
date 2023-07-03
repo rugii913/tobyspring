@@ -26,13 +26,13 @@ public class Calculator {
         }
      }
 
-     public Integer lineReadTemplate(String filepath, LineCallback callback, int initVal) throws IOException {
+     public <T> T lineReadTemplate(String filepath, LineCallback<T> callback, T initVal) throws IOException {
          // fileReadTemplate()과 비교
          BufferedReader br = null;
          
          try {
              br = new BufferedReader(new FileReader(filepath));
-             Integer res = initVal;
+             T res = initVal;
              String line = null;
              while ((line = br.readLine()) != null) {
                  // doSomethingWithReader()에서 공통적인 부분을 더 빼냈다.
@@ -95,5 +95,9 @@ public class Calculator {
 
     public Integer calcMultiply(String filepath) throws IOException {
         return lineReadTemplate(filepath, (line, value) -> value * Integer.valueOf(line), 1);
+    }
+
+    public String concatenate(String filepath) throws IOException {
+        return lineReadTemplate(filepath, (line, value) -> value + line, "");
     }
 }
