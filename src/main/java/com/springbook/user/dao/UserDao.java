@@ -14,12 +14,11 @@ public class UserDao {
     private DataSource dataSource; // 아직 get(), getCount()에서 사용하므로 남겨둬야함
     private JdbcContext jdbcContext;
 
-    public void setDataSource(DataSource dataSource) { // 아직 get(), getCount()에서 사용하므로 남겨둬야함
-        this.dataSource = dataSource;
-    }
+    public void setDataSource(DataSource dataSource) { // 수정자 메서드이면서 JdbcContext에 대한 생성, DI 작업을 동시에 수행
+        this.jdbcContext = new JdbcContext(); // JdbcContext 인스턴스 생성(IoC)
+        this.jdbcContext.setDataSource(dataSource); // DI
 
-    public void setJdbcContext(JdbcContext jdbcContext) { // JdbcContext는 DI 받는다.
-        this.jdbcContext = jdbcContext;
+        this.dataSource = dataSource; // 아직 JdbcContext를 적용하지 않은 메서드를 위해 남겨놓음
     }
 
     public void add(final User user) throws SQLException {

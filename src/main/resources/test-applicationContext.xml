@@ -12,11 +12,11 @@
 
     <bean id="userDao" class="com.springbook.user.dao.UserDao">
         <property name="dataSource" ref="dataSource"/> <!--UserDao 내에 아직 DataSource 사용하는 메서드 있어서 제거하지 않음-->
-        <property name="jdbcContext" ref="jdbcContext" />
+<!--        <property name="jdbcContext" ref="jdbcContext" />--> <!--p.239 3-24 관련 주석 처리-->
     </bean>
 
-    <bean id="jdbcContext" class="com.springbook.user.dao.JdbcContext"> <!--추가된 JdbcContext 타입 빈-->
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
+<!--    <bean id="jdbcContext" class="com.springbook.user.dao.JdbcContext"> &lt;!&ndash;추가된 JdbcContext 타입 빈&ndash;&gt;-->
+<!--        <property name="dataSource" ref="dataSource"/>--> <!--p.239 3-24 관련 주석 처리-->
+<!--    </bean>-->
 
 </beans>
