@@ -57,4 +57,55 @@ public class ExceptionHandlingExample {
         }
     }
 
+    // 예외 전환 기능을 가진 DAO 메서드 - 의미를 명확하게 하기 위해 다른 예외로 전환
+    public void exceptionTranslation() throws DuplicateUserIdException, SQLException {
+        try {
+            // ex. JDBC를 이용해 user 정보를 DB에 추가하는 코드 또는
+            // 그런 기능을 가진 다른 SQL Exception을 던지는 메서드를 호출하는 코드 등
+            this.jdbcContext.executeSql("delete from users");
+        } catch (SQLException e) {
+            // ErrorCode가 MySQL의 "Duplicate Entry(1062)"이면 예외 전환
+            if (e.getErrorCode() == MysqlErrorNumbers.ER_DUP_ENTRY) {
+                throw DuplicateUserIdException();
+            } else {
+                throw e; // 그 외의 경우는 SQLException 그대로
+            }
+        }
+    }
+
+    // 중첩 예외 - 주로 예외처리를 강제하는 체크 예외를 언체크 예외인 런타임 예외로 바꾸는 경우에 사용
+    // 중첩 예외(nested exception) 예시 1: 새로운 예외를 만들면서 생성자에 근본 원인이 되는 예외를 넣어주기
+    public void exceptionTranslation() throws DuplicateUserIdException, SQLException {
+        try {
+            // 예외 발생 가능성 있는 코드
+        } catch (SQLException e) {
+            if (e.getErrorCode() == MysqlErrorNumbers.ER_DUP_ENTRY) {
+                throw DuplicateUserIdException(e); // -> 새로운 예외를 만들면서 생성자에 근본 원인이 되는 예외를 넣어주기
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    // 중첩 예외(nested exception) 예시 2: 새로운 예외를 만들면서 initCause() 메서드에 근본 원인이 되는 예외를 넣어주기
+    public void exceptionTranslation() throws DuplicateUserIdException, SQLException {
+        try {
+            // 예외 발생 가능성 있는 코드
+        } catch (SQLException e) {
+            if (e.getErrorCode() == MysqlErrorNumbers.ER_DUP_ENTRY) {
+                throw DuplicateUserIdException().initCause(e); // -> 새로운 예외를 만들면서 initCause() 메서드에 근본 원인이 되는 예외를 넣어주기
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    /*
+        어차피 복구하지 못할 예외라면
+        - 어플리케이션 코드에서는 런타임 예외로 포장해서 던져버리고,
+        - 예외처리 서비스 등을 이용해 자세한 로그를 남기고,
+        - 관리자에게는 메일 등으로 통보해주고,
+        - 사용자에게는 친절한 안내 메시지를 보여주는 식으로
+        처리하는 게 바람직하다.
+    */
 }
