@@ -9,7 +9,7 @@ import java.util.List;
 
 public class UserDao {
 
-    private RowMapper<User> userMapper = (rs, rowNum) -> { // 재사용 가능하도록 RowMapper 독립
+    private RowMapper<User> userMapper = (rs, rowNum) -> {
         User user = new User();
         user.setId(rs.getString("id"));
         user.setName(rs.getString("name"));
@@ -20,9 +20,6 @@ public class UserDao {
 
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-        // DataSource 객체는 JdbcTemplate을 만든 후에는 사용하지 않으므로 필드에 저장하지 않아도 된다.
-        // 수정자 메서드에서 이렇게 다른 객체를 생성하는 경우도 종종 있다.
-        // JdbcTemplate을 직접 스프링 빈으로 등록하는 방식을 사용하고 싶다면 setDataSource를 setJdbcTemplate으로 바꾸기만 하면 됨.
     }
 
     public void add(final User user) {
