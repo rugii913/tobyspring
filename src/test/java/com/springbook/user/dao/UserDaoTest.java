@@ -8,6 +8,7 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -75,5 +76,35 @@ class UserDaoTest {
 
         assertThatThrownBy(() -> dao.get("unknown_id"))
                 .isInstanceOf(EmptyResultDataAccessException.class);
+    }
+
+    @Test
+    public void getAll() {
+        dao.deleteAll();
+
+        dao.add(user1); // Id: gyumee
+        List<User> users1 = dao.getAll();
+        assertThat(users1.size()).isEqualTo(1);
+        checkSameUser(user1, users1.get(0)); // checkSameUser(): 내부에서 사용하는 메서드
+
+        dao.add(user2); // Id: leegw700
+        List<User> users2 = dao.getAll();
+        assertThat(users2.size()).isEqualTo(2);
+        checkSameUser(user1, users2.get(0));
+        checkSameUser(user2, users2.get(1));
+
+        dao.add(user3); // Id: bumjin
+        List<User> users3 = dao.getAll();
+        assertThat(users3.size()).isEqualTo(3);
+        checkSameUser(user3, users3.get(0)); // 오름차순 조회할 것 - user3의 id 값이 알파벳 순으로 가장 빠르므로, getAll()의 첫 번째 element여야 한다.
+        checkSameUser(user1, users3.get(1));
+        checkSameUser(user2, users3.get(2));
+    }
+
+    // User 객체의 내용을 비교하는 검증 코드, 테스트에서 반복적으로 사용되므로 분리해놓았다.
+    private void checkSameUser(User user1, User user2) {
+        assertThat(user1.getId()).isEqualTo(user2.getId());
+        assertThat(user1.getName()).isEqualTo(user2.getName());
+        assertThat(user1.getPassword()).isEqualTo(user2.getPassword());
     }
 }

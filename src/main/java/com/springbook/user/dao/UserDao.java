@@ -4,6 +4,7 @@ import com.springbook.user.domain.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 public class UserDao {
 
@@ -54,5 +55,17 @@ public class UserDao {
     public Integer getCount() {
         return this.jdbcTemplate.queryForObject("select count(*) from users", Integer.class);
         // queryForInt deprecated https://youngminz.netlify.app/posts/toby-spring-boot-in-2021
+    }
+
+    public List<User> getAll() {
+        return this.jdbcTemplate.query("select * from users order by id",
+                (rs, rowNum) -> {
+                    User user = new User();
+                    user.setId(rs.getString("id"));
+                    user.setName(rs.getString("name"));
+                    user.setPassword(rs.getString("password"));
+                    return user;
+                }
+        );
     }
 }
