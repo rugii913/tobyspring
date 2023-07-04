@@ -104,15 +104,7 @@ public class UserDao {
             }
         }
         */
-        return this.jdbcTemplate.query(
-                con -> con.prepareStatement("select count(*) from users"), // 첫 번째 콜백, Statement 생성
-                rs -> { rs.next(); return rs.getInt(1);} // 두 번째 콜백, ResultSet으로부터 값 추출
-                );
-        /*
-        public <T> T query(PreparedStatementCreator psc, ResultSetExtractor<T> rse) throws DataAccessException {
-            return query(psc, null, rse);
-        }
-        query(~) 메서드 중 위를 사용한 것
-        */
+        return this.jdbcTemplate.queryForObject("select count(*) from users", Integer.class);
+        // queryForInt deprecated https://youngminz.netlify.app/posts/toby-spring-boot-in-2021
     }
 }
