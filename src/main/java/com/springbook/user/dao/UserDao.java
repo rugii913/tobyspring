@@ -2,12 +2,20 @@ package com.springbook.user.dao;
 
 import com.springbook.user.domain.User;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 import javax.sql.DataSource;
 import java.util.List;
 
 public class UserDao {
 
+    private RowMapper<User> userMapper = (rs, rowNum) -> { // 재사용 가능하도록 RowMapper 독립
+        User user = new User();
+        user.setId(rs.getString("id"));
+        user.setName(rs.getString("name"));
+        user.setPassword(rs.getString("password"));
+        return user;
+    };
     private JdbcTemplate jdbcTemplate;
 
     public void setDataSource(DataSource dataSource) {
@@ -23,29 +31,7 @@ public class UserDao {
     }
 
     public User get(String id) {
-        return this.jdbcTemplate.queryForObject("select * from users where id = ?",
-                (rs, rowNum) -> { // ResultSet의 row 결과를 객체에 매핑해주는 RowMapper 콜백
-                    User user = new User();
-                    user.setId(rs.getString("id"));
-                    user.setName(rs.getString("name"));
-                    user.setPassword(rs.getString("password"));
-                    return user;
-                },
-                id); // SQL에 바인딩할 파라미터 값
-
-    /*
-    !!!deprecated!!!
-    public <T> T queryForObject(String sql, @Nullable Object[] args, RowMapper<T> rowMapper) throws DataAccessException {
-        List<T> results = query(sql, args, new RowMapperResultSetExtractor<>(rowMapper, 1));
-        return DataAccessUtils.nullableSingleResult(results);
-    }
-
-    ! 대신 이것 사용, args가 가변인자로 뒤로 들어감
-    public <T> T queryForObject(String sql, RowMapper<T> rowMapper, @Nullable Object... args) throws DataAccessException {
-        List<T> results = query(sql, args, new RowMapperResultSetExtractor<>(rowMapper, 1));
-        return DataAccessUtils.nullableSingleResult(results);
-    }
-    */
+        return this.jdbcTemplate.queryForObject("select * from users where id = ?", this.userMapper, id);
     }
 
     public void deleteAll() {
@@ -54,18 +40,9 @@ public class UserDao {
 
     public Integer getCount() {
         return this.jdbcTemplate.queryForObject("select count(*) from users", Integer.class);
-        // queryForInt deprecated https://youngminz.netlify.app/posts/toby-spring-boot-in-2021
     }
 
     public List<User> getAll() {
-        return this.jdbcTemplate.query("select * from users order by id",
-                (rs, rowNum) -> {
-                    User user = new User();
-                    user.setId(rs.getString("id"));
-                    user.setName(rs.getString("name"));
-                    user.setPassword(rs.getString("password"));
-                    return user;
-                }
-        );
+        return this.jdbcTemplate.query("select * from users order by id", this.userMapper);
     }
 }
