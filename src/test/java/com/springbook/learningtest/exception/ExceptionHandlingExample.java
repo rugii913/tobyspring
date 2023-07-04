@@ -3,6 +3,7 @@ package com.springbook.learningtest.exception;
 import com.springbook.user.dao.JdbcContext;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 
 public class ExceptionHandlingExample {
@@ -139,4 +140,31 @@ public class ExceptionHandlingExample {
         - 사용자에게는 친절한 안내 메시지를 보여주는 식으로
         처리하는 게 바람직하다.
     */
+
+    public void applicationException() {
+        Account account = new Account();
+        BigDecimal amount = BigDecimal.valueOf(1_000_000_000);
+
+        try {
+            BigDecimal balance = account.withdraw(amount);
+            // ...
+            // 정상적인 처리 결과를 출력하도록 진행
+        } catch (InsufficientBalanceException e) { // withdraw(~) 메서드의 체크 예외
+            // InsufficientBalanceException에 담긴 인출 가능한 잔고금액 정보를 가져옴
+            BigDecimal availFunds = e.getAvailFunds();
+        }
+    }
+
+    class Account {
+        public BigDecimal withdraw(BigDecimal amount) throws InsufficientBalanceException {
+            if (amount != BigDecimal.valueOf(1_500_000_000)) throw new InsufficientBalanceException();
+            return amount;
+        }
+    }
+
+    private class InsufficientBalanceException extends Exception {
+        public BigDecimal getAvailFunds() {
+            return BigDecimal.valueOf(1_000_000_000);
+        }
+    }
 }
