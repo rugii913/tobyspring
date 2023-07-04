@@ -2,6 +2,7 @@ package com.springbook.user.dao;
 
 import com.springbook.user.domain.User;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -12,17 +13,17 @@ import java.sql.SQLException;
 public class UserDao {
 
     private DataSource dataSource; // 아직 get(), getCount()에서 사용하므로 남겨둬야함
-    private JdbcContext jdbcContext;
+    private JdbcTemplate jdbcTemplate;
 
-    public void setDataSource(DataSource dataSource) { // 수정자 메서드이면서 JdbcContext에 대한 생성, DI 작업을 동시에 수행
-        this.jdbcContext = new JdbcContext(); // JdbcContext 인스턴스 생성(IoC)
-        this.jdbcContext.setDataSource(dataSource); // DI
+    public void setDataSource(DataSource dataSource) {
 
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.dataSource = dataSource; // 아직 JdbcContext를 적용하지 않은 메서드를 위해 남겨놓음
     }
 
     public void add(final User user) throws SQLException {
 
+        /*
         this.jdbcContext.workWithStatementStrategy(
                 (connection) -> {
                     PreparedStatement ps
@@ -34,6 +35,9 @@ public class UserDao {
                     return ps;
                 }
         );
+        */
+        this.jdbcTemplate.update("insert into users(id, name, password) values (?,?,?)",
+                user.getId(), user.getName(), user.getPassword());
     }
 
     public User get(String id) throws SQLException {
@@ -65,7 +69,8 @@ public class UserDao {
     }
 
     public void deleteAll() throws SQLException {
-        this.jdbcContext.executeSql("delete from users");
+//        this.jdbcContext.executeSql("delete from users");
+        this.jdbcTemplate.update("delete from users");
     }
 
     public int getCount() throws SQLException {
