@@ -8,13 +8,13 @@ import java.util.List;
 
 public class UserDao {
 
-    private DataSource dataSource; // 아직 get(), getCount()에서 사용하므로 남겨둬야함
     private JdbcTemplate jdbcTemplate;
 
     public void setDataSource(DataSource dataSource) {
-
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-        this.dataSource = dataSource; // 아직 JdbcContext를 적용하지 않은 메서드를 위해 남겨놓음
+        // DataSource 객체는 JdbcTemplate을 만든 후에는 사용하지 않으므로 필드에 저장하지 않아도 된다.
+        // 수정자 메서드에서 이렇게 다른 객체를 생성하는 경우도 종종 있다.
+        // JdbcTemplate을 직접 스프링 빈으로 등록하는 방식을 사용하고 싶다면 setDataSource를 setJdbcTemplate으로 바꾸기만 하면 됨.
     }
 
     public void add(final User user) {
@@ -32,7 +32,7 @@ public class UserDao {
                     return user;
                 },
                 id); // SQL에 바인딩할 파라미터 값
-        
+
     /*
     !!!deprecated!!!
     public <T> T queryForObject(String sql, @Nullable Object[] args, RowMapper<T> rowMapper) throws DataAccessException {
