@@ -82,6 +82,9 @@ class UserDaoTest {
     public void getAll() {
         dao.deleteAll();
 
+        List<User> users0 = dao.getAll();
+        assertThat(users0.size()).isEqualTo(0); // 데이터가 없을 때는 크기가 0인 리스트 오브젝트가 리턴돼야 한다.
+
         dao.add(user1); // Id: gyumee
         List<User> users1 = dao.getAll();
         assertThat(users1.size()).isEqualTo(1);
