@@ -36,4 +36,25 @@ public class ExceptionHandlingExample {
         }
         throw new RetryFailedException(); // 최대 재시도 횟수를 넘기면 직접 예외 던지기
     }
+
+    /*
+        예외를 회피하는 것은 예외를 복구하는 것처럼 의도가 분명해야 한다.(p.288)
+    */
+    // 예외처리 회피 1
+    public void exceptionRethrow1() throws SQLException {
+        // ex. JDBC API
+        this.jdbcContext.executeSql("delete from users");
+    }
+
+    // 예외처리 회피 2
+    public void exceptionRethrow2() throws SQLException {
+        try {
+            // ex. JDBC API
+            this.jdbcContext.executeSql("delete from users");
+        } catch (SQLException e) {
+            // 로그 출력 등... 작업 후 다시 던지기
+            throw e;
+        }
+    }
+
 }
