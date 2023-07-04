@@ -66,7 +66,7 @@ public class ExceptionHandlingExample {
         } catch (SQLException e) {
             // ErrorCode가 MySQL의 "Duplicate Entry(1062)"이면 예외 전환
             if (e.getErrorCode() == MysqlErrorNumbers.ER_DUP_ENTRY) {
-                throw DuplicateUserIdException();
+                throw new DuplicateUserIdException();
             } else {
                 throw e; // 그 외의 경우는 SQLException 그대로
             }
@@ -75,12 +75,13 @@ public class ExceptionHandlingExample {
 
     // 중첩 예외 - 주로 예외처리를 강제하는 체크 예외를 언체크 예외인 런타임 예외로 바꾸는 경우에 사용
     // 중첩 예외(nested exception) 예시 1: 새로운 예외를 만들면서 생성자에 근본 원인이 되는 예외를 넣어주기
-    public void exceptionTranslation() throws DuplicateUserIdException, SQLException {
+    public void exceptionTranslation1() throws DuplicateUserIdException, SQLException {
         try {
             // 예외 발생 가능성 있는 코드
+            this.jdbcContext.executeSql("delete from users");
         } catch (SQLException e) {
             if (e.getErrorCode() == MysqlErrorNumbers.ER_DUP_ENTRY) {
-                throw DuplicateUserIdException(e); // -> 새로운 예외를 만들면서 생성자에 근본 원인이 되는 예외를 넣어주기
+                throw new DuplicateUserIdException(e); // -> 새로운 예외를 만들면서 생성자에 근본 원인이 되는 예외를 넣어주기
             } else {
                 throw e;
             }
@@ -88,16 +89,46 @@ public class ExceptionHandlingExample {
     }
 
     // 중첩 예외(nested exception) 예시 2: 새로운 예외를 만들면서 initCause() 메서드에 근본 원인이 되는 예외를 넣어주기
-    public void exceptionTranslation() throws DuplicateUserIdException, SQLException {
+    public void exceptionTranslation2() throws DuplicateUserIdException, SQLException {
         try {
             // 예외 발생 가능성 있는 코드
+            this.jdbcContext.executeSql("delete from users");
         } catch (SQLException e) {
             if (e.getErrorCode() == MysqlErrorNumbers.ER_DUP_ENTRY) {
-                throw DuplicateUserIdException().initCause(e); // -> 새로운 예외를 만들면서 initCause() 메서드에 근본 원인이 되는 예외를 넣어주기
+                throw (DuplicateUserIdException) new DuplicateUserIdException().initCause(e); // -> 새로운 예외를 만들면서 initCause() 메서드에 근본 원인이 되는 예외를 넣어주기
             } else {
                 throw e;
             }
         }
+    }
+
+    // p.293 리스트 4-13~14 예외처리 전략 - 런타임 예외의 보편화 적용
+    public void add() throws DuplicateUserIdException { // DuplicateUserIdException은 런타임 예외이지만, 필요한 경우 활용할 수 있도록 선언에 포함시킨다.
+        try {
+            // ex. JDBC를 이용해 user 정보를 DB에 추가하는 코드 또는
+            // 그런 기능을 가진 다른 SQL Exception을 던지는 메서드를 호출하는 코드 등
+            this.jdbcContext.executeSql("delete from users");
+        } catch (SQLException e) {
+            if (e.getErrorCode() == MysqlErrorNumbers.ER_DUP_ENTRY) {
+                throw new DuplicateUserIdException(e); //예외 전환
+            } else {
+                throw new RuntimeException(e); // 예외 포장
+            }
+        }
+    }
+
+    class DuplicateUserIdException extends RuntimeException {
+
+        public DuplicateUserIdException() {
+        }
+
+        public DuplicateUserIdException(Throwable cause) {
+            super(cause);
+        }
+    }
+
+    class MysqlErrorNumbers {
+        static final int ER_DUP_ENTRY = 1062;
     }
 
     /*
