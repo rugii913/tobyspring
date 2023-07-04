@@ -1,6 +1,9 @@
 package com.springbook.learningtest.exception;
 
 import com.springbook.user.dao.JdbcContext;
+import com.springbook.user.domain.User;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import java.math.BigDecimal;
@@ -177,4 +180,20 @@ public class ExceptionHandlingExample {
         - 스프링의 다른 API 메서드에 정의되어 있는 예외 역시 런타임 예외
          -> 발생 가능한 예외가 있다고 하더라도 이를 처리하도록 강제하지 않음
     */
+
+    // p.303 리스트 4-17~18 JDBC Template은 DB 에러 코드 매핑을 통해 예외 전환을 한다.
+    public void addExceptionTranslation() throws DuplicateUserIdException { // 예외 전환해서 어플리케이션 레벨의 체크 예외 던지기
+        try {
+            // jdbcTemplate을 이용해 User를 add 하는 코드
+            User user = new User("abc", "name", "password");
+            JdbcTemplate jdbcTemplate = new JdbcTemplate(
+                    new SingleConnectionDataSource("jdbc:mysql://localhost/testdb", "spring", "book", true)
+            );
+            jdbcTemplate.update("insert into users(id, name, password) values (?,?,?)",
+                    user.getId(), user.getName(), user.getPassword());
+        } catch (DuplicateKeyException e) {
+            // 로그를 남기는 등의 필요한 작업
+            throw new DuplicateUserIdException(e); // 예외를 전환할 때는 원인이 되는 예외를 중첩하는 것이 좋다.
+        }
+    }
 }
