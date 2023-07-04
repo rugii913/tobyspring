@@ -17,52 +17,11 @@ public class UserDao {
     }
 
     public void add(final User user) {
-
-        /*
-        this.jdbcContext.workWithStatementStrategy(
-                (connection) -> {
-                    PreparedStatement ps
-                            = connection.prepareStatement("insert into users(id, name, password) values(?,?,?)");
-                    ps.setString(1, user.getId());
-                    ps.setString(2, user.getName());
-                    ps.setString(3, user.getPassword());
-
-                    return ps;
-                }
-        );
-        */
         this.jdbcTemplate.update("insert into users(id, name, password) values (?,?,?)",
                 user.getId(), user.getName(), user.getPassword());
     }
 
     public User get(String id) {
-        /*
-        Connection c = dataSource.getConnection();
-
-        PreparedStatement ps = c.prepareStatement(
-                "select * from users where id = ?");
-        ps.setString(1, id);
-
-        ResultSet rs = ps.executeQuery();
-
-        User user = null;
-        if (rs.next()) {
-            user = new User();
-            user.setId(rs.getString("id"));
-            user.setName(rs.getString("name"));
-            user.setPassword(rs.getString("password"));
-        }
-
-        rs.close();
-        ps.close();
-        c.close();
-
-        if (user == null) {
-            throw new EmptyResultDataAccessException(1);
-        }
-
-        return user;
-        */
         return this.jdbcTemplate.queryForObject("select * from users where id = ?",
                 (rs, rowNum) -> { // ResultSet의 row 결과를 객체에 매핑해주는 RowMapper 콜백
                     User user = new User();
@@ -89,41 +48,10 @@ public class UserDao {
     }
 
     public void deleteAll() {
-//        this.jdbcContext.executeSql("delete from users");
         this.jdbcTemplate.update("delete from users");
     }
 
     public Integer getCount() {
-        /*
-        Connection c = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            c = dataSource.getConnection();
-
-            ps = c.prepareStatement("select count(*) from users");
-
-            rs = ps.executeQuery();
-            rs.next();
-            return rs.getInt(1);
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (rs != null) {
-                try { rs.close(); }
-                catch (SQLException e) { }
-            }
-            if (ps != null) {
-                try { ps.close(); }
-                catch (SQLException e) { }
-            }
-            if (c != null) {
-                try { c.close(); }
-                catch (SQLException e) { }
-            }
-        }
-        */
         return this.jdbcTemplate.queryForObject("select count(*) from users", Integer.class);
         // queryForInt deprecated https://youngminz.netlify.app/posts/toby-spring-boot-in-2021
     }
