@@ -1,14 +1,9 @@
 package com.springbook.user.dao;
 
 import com.springbook.user.domain.User;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class UserDao {
 
@@ -40,7 +35,8 @@ public class UserDao {
                 user.getId(), user.getName(), user.getPassword());
     }
 
-    public User get(String id) throws SQLException {
+    public User get(String id) {
+        /*
         Connection c = dataSource.getConnection();
 
         PreparedStatement ps = c.prepareStatement(
@@ -66,6 +62,30 @@ public class UserDao {
         }
 
         return user;
+        */
+        return this.jdbcTemplate.queryForObject("select * from users where id = ?",
+                (rs, rowNum) -> { // ResultSet의 row 결과를 객체에 매핑해주는 RowMapper 콜백
+                    User user = new User();
+                    user.setId(rs.getString("id"));
+                    user.setName(rs.getString("name"));
+                    user.setPassword(rs.getString("password"));
+                    return user;
+                },
+                id); // SQL에 바인딩할 파라미터 값
+        
+    /*
+    !!!deprecated!!!
+    public <T> T queryForObject(String sql, @Nullable Object[] args, RowMapper<T> rowMapper) throws DataAccessException {
+        List<T> results = query(sql, args, new RowMapperResultSetExtractor<>(rowMapper, 1));
+        return DataAccessUtils.nullableSingleResult(results);
+    }
+
+    ! 대신 이것 사용, args가 가변인자로 뒤로 들어감
+    public <T> T queryForObject(String sql, RowMapper<T> rowMapper, @Nullable Object... args) throws DataAccessException {
+        List<T> results = query(sql, args, new RowMapperResultSetExtractor<>(rowMapper, 1));
+        return DataAccessUtils.nullableSingleResult(results);
+    }
+    */
     }
 
     public void deleteAll() {
