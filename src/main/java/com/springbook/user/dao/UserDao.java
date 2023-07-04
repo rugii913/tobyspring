@@ -21,7 +21,7 @@ public class UserDao {
         this.dataSource = dataSource; // 아직 JdbcContext를 적용하지 않은 메서드를 위해 남겨놓음
     }
 
-    public void add(final User user) throws SQLException {
+    public void add(final User user) {
 
         /*
         this.jdbcContext.workWithStatementStrategy(
@@ -68,12 +68,12 @@ public class UserDao {
         return user;
     }
 
-    public void deleteAll() throws SQLException {
+    public void deleteAll() {
 //        this.jdbcContext.executeSql("delete from users");
         this.jdbcTemplate.update("delete from users");
     }
 
-    public int getCount() throws SQLException {
+    public Integer getCount() {
         /*
         Connection c = null;
         PreparedStatement ps = null;
