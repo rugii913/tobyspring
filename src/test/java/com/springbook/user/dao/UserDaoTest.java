@@ -3,8 +3,12 @@ package com.springbook.user.dao;
 import com.springbook.user.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -13,11 +17,12 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-// 스프링 컨테이너에서 UserDao가 동작함을 확인하는 것은 UserDaoTest의 기본적인 관심사가 아니다.
-
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(locations = "/test-applicationContext.xml")
 class UserDaoTest {
 
-    private UserDao dao; // @Autowired 없음
+    @Autowired
+    private UserDao dao;
     private User user1;
     private User user2;
     private User user3;
@@ -27,11 +32,6 @@ class UserDaoTest {
         this.user1 = new User("gyumee", "박성철", "springno1");
         this.user2 = new User("leegw700", "이길원", "springno2");
         this.user3 = new User("bumjin", "박범진", "springno3");
-
-        dao = new UserDao();
-        DataSource dataSource = new SingleConnectionDataSource(
-                "jdbc:mysql://localhost/testdb", "spring", "book", true);
-        dao.setDataSource(dataSource);
     }
 
     @Test
