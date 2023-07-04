@@ -103,7 +103,7 @@ public class ExceptionHandlingExample {
         }
     }
 
-    // p.293 리스트 4-13~14 예외처리 전략 - 런타임 예외의 보편화 적용
+    // p.293 리스트 4-13~14 예외처리 전략 - 런타임 예외의 보편화 적용 / 낙관적인 예외처리 기법
     public void add() throws DuplicateUserIdException { // DuplicateUserIdException은 런타임 예외이지만, 필요한 경우 활용할 수 있도록 선언에 포함시킨다.
         try {
             // ex. JDBC를 이용해 user 정보를 DB에 추가하는 코드 또는
@@ -141,6 +141,7 @@ public class ExceptionHandlingExample {
         처리하는 게 바람직하다.
     */
 
+    // p.296 리스트 4-15 예외처리 전략 - 어플리케이션 예외 / 비관적인 접근 방법
     public void applicationException() {
         Account account = new Account();
         BigDecimal amount = BigDecimal.valueOf(1_000_000_000);
@@ -167,4 +168,13 @@ public class ExceptionHandlingExample {
             return BigDecimal.valueOf(1_000_000_000);
         }
     }
+
+    /*
+        - 스프링의 JdbcTemplate은 런타임 예외 전략을 따르고 있다.
+         -> 가능한 빨리 언체크/런타임 예외로 전환
+         -> 앞서 JdbcContext에서 JdbcTemplate으로 바꿀 때 throws SQLException이 사라졌던 이유
+
+        - 스프링의 다른 API 메서드에 정의되어 있는 예외 역시 런타임 예외
+         -> 발생 가능한 예외가 있다고 하더라도 이를 처리하도록 강제하지 않음
+    */
 }
