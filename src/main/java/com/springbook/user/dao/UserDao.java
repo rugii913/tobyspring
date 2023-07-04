@@ -74,6 +74,7 @@ public class UserDao {
     }
 
     public int getCount() throws SQLException {
+        /*
         Connection c = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -90,23 +91,28 @@ public class UserDao {
             throw e;
         } finally {
             if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                }
+                try { rs.close(); }
+                catch (SQLException e) { }
             }
             if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException e) {
-                }
+                try { ps.close(); }
+                catch (SQLException e) { }
             }
             if (c != null) {
-                try {
-                    c.close();
-                } catch (SQLException e) {
-                }
+                try { c.close(); }
+                catch (SQLException e) { }
             }
         }
+        */
+        return this.jdbcTemplate.query(
+                con -> con.prepareStatement("select count(*) from users"), // 첫 번째 콜백, Statement 생성
+                rs -> { rs.next(); return rs.getInt(1);} // 두 번째 콜백, ResultSet으로부터 값 추출
+                );
+        /*
+        public <T> T query(PreparedStatementCreator psc, ResultSetExtractor<T> rse) throws DataAccessException {
+            return query(psc, null, rse);
+        }
+        query(~) 메서드 중 위를 사용한 것
+        */
     }
 }
