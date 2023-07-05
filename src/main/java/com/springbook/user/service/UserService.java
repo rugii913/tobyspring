@@ -13,6 +13,8 @@ public class UserService {
         this.userDao = userDao;
     }
 
+    /*
+    // upgradeLevels() 리팩토링 전
     public void upgradeLevels() {
         List<User> users = userDao.getAll();
         for (User user : users) {
@@ -31,6 +33,15 @@ public class UserService {
 
             if (changed) {
                 userDao.update(user); // 레벨의 변경이 있는 경우에만 update() 호출
+            }
+        }
+    }
+    */
+    public void upgradeLevels() { // 기본 작업 흐름만 남겨둔 upgradeLevels() - 가장 추상적인 레벨
+        List<User> users = userDao.getAll();
+        for (User user : users) {
+            if (canUpgradeLevel(user)) {
+                upgradeLevel(user);
             }
         }
     }
