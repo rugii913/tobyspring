@@ -120,12 +120,14 @@ class UserDaoTest {
         user1.setLevel(Level.GOLD);
         user1.setLogin(1000);
         user1.setRecommend(999);
-        dao.update(user1); // 픽스처에 들어있는 user1 정보를 변경한 후 수정 메서드를 호출
+        int affectedRow = dao.update(user1); // 픽스처에 들어있는 user1 정보를 변경한 후 수정 메서드를 호출
 
         User user1update = dao.get(user1.getId());
         checkSameUser(user1, user1update);
         User user2same = dao.get(user2.getId());
         checkSameUser(user2, user2same);
+
+        assertThat(affectedRow).isEqualTo(1);
     }
 
     @Test // 일반적으로 학습 테스트는 어플리케이션 코드 테스트와 분리해서 작성함에 유의
