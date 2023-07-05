@@ -8,13 +8,22 @@ public class User {
     int login;
     int recommend;
 
+    public User() { // 자바빈 규약을 따르는 클래스에 생성자를 명시적으로 추가했을 때는 디폴트 생성자도 함께 정의
+    }
+
     public User(String id, String name, String password) {
         this.id = id;
         this.name = name;
         this.password = password;
     }
 
-    public User() { // 자바빈 규약을 따르는 클래스에 생성자를 명시적으로 추가했을 때는 디폴트 생성자도 함께 정의
+    public User(String id, String name, String password, Level level, int login, int recommend) {
+        this.id = id;
+        this.name = name;
+        this.password = password;
+        this.level = level;
+        this.login = login;
+        this.recommend = recommend;
     }
 
     public String getId() {
