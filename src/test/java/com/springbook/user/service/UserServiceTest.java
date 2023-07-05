@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,6 +24,8 @@ class UserServiceTest {
 
     @Autowired
     UserService userService;
+    @Autowired
+    DataSource dataSource;
     List<User> users; // 테스트 픽스처
 
     @BeforeEach
@@ -37,7 +40,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void upgradeLevels() {
+    public void upgradeLevels() throws Exception {
         userService.userDao.deleteAll();
         for (User user : users) {
             userService.userDao.add(user);
@@ -87,10 +90,11 @@ class UserServiceTest {
     }
 
     @Test
-    public void upgradeAllOrNothing() {
+    public void upgradeAllOrNothing() throws Exception {
         // 예외를 발생시킬 네 번째 사용자의 id를 넣어서 테스트용 UserService 대용 객체를 생성함
         UserService testUserService = new TestUserService(users.get(3).getId());
         testUserService.setUserDao(this.userService.userDao); // userDao를 수동으로 DI
+        testUserService.setDataSource(this.dataSource); // dataSource도 수동으로 DI
 
         userService.userDao.deleteAll();
         for (User user : users) {
