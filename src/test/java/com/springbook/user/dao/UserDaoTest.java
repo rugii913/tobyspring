@@ -5,12 +5,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -110,4 +110,17 @@ class UserDaoTest {
         assertThat(user1.getName()).isEqualTo(user2.getName());
         assertThat(user1.getPassword()).isEqualTo(user2.getPassword());
     }
+
+    @Test // 일반적으로 학습 테스트는 어플리케이션 코드 테스트와 분리해서 작성함에 유의
+    public void duplicateKey() {
+        dao.deleteAll();
+
+        dao.add(user1);
+        // 테스트를 실패시키면 어떤 예외 클래스가 던져졌는지 확인할 수 있다.
+        // assertThatThrownBy(() -> dao.add(user1)).isEqualTo(DataAccessException.class);
+        assertThatThrownBy(() -> dao.add(user1)).isInstanceOf(DataAccessException.class);
+        // isExactlyInstanceOf로 정확히 어떤 클래스의 인스턴스인지 테스트할 수 있다.
+        assertThatThrownBy(() -> dao.add(user1)).isExactlyInstanceOf(DuplicateKeyException.class);
+    }
+
 }
