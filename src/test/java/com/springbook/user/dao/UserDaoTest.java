@@ -8,9 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
+import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -23,6 +26,8 @@ class UserDaoTest {
 
     @Autowired
     private UserDao dao;
+    @Autowired
+    private DataSource dataSource;
     private User user1;
     private User user2;
     private User user3;
@@ -123,4 +128,19 @@ class UserDaoTest {
         assertThatThrownBy(() -> dao.add(user1)).isExactlyInstanceOf(DuplicateKeyException.class);
     }
 
+    @Test
+    public void sqlExceptionTranslate() {
+        dao.deleteAll();
+
+        try {
+            dao.add(user1);
+            dao.add(user1);
+        } catch (DuplicateKeyException ex) {
+            SQLException sqlEx = (SQLException) ex.getRootCause(); // 중첩되어 있는 SQLException 가져오기
+            SQLExceptionTranslator set = // 빈으로 등록된 dataSource로 SQLErrorCodeSQLExceptionTranslator 오브젝트 만들기
+                    new SQLErrorCodeSQLExceptionTranslator(this.dataSource);
+            // set.translate(null, null, sqlEx)하면 SQLException을 DataAccessException 타입의 예외로 변환해준다. // task, sql 파라미터는 null로 둬도 테스트에 지장 없음
+            assertThat(set.translate(null, null, sqlEx)).isExactlyInstanceOf(DuplicateKeyException.class);
+        }
+    }
 }
