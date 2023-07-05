@@ -59,12 +59,7 @@ public class UserService {
 
     private void upgradeLevel(User user) {
         // 작업 1. 사용자의 레벨을 다음 단계로 바꿔 줌
-        if (user.getLevel() == Level.BASIC) {
-            user.setLevel(Level.SILVER);
-        } else if (user.getLevel() == Level.SILVER) {
-            user.setLevel(Level.GOLD);
-        }
-        
+        user.upgradeLevel(); // (1) User의 내부 정보 변경을 User가 스스로 다룸 (2) 레벨 순서와 다음 단계 레벨이 무엇인지 결정하는 것은 Level enum이 맡고 있음
         // 작업 2. 변경사항을 DB에 업데이트
         userDao.update(user);
     }
