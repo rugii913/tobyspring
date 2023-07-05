@@ -108,6 +108,23 @@ class UserDaoTest {
         checkSameUser(user2, users3.get(2));
     }
 
+    @Test
+    public void update() {
+        dao.deleteAll();
+
+        dao.add(user1);
+
+        user1.setName("오민규");
+        user1.setPassword("springno6");
+        user1.setLevel(Level.GOLD);
+        user1.setLogin(1000);
+        user1.setRecommend(999);
+        dao.update(user1); // 픽스처에 들어있는 user1 정보를 변경한 후 수정 메서드를 호출
+
+        User user1update = dao.get(user1.getId());
+        checkSameUser(user1, user1update);
+    }
+
     @Test // 일반적으로 학습 테스트는 어플리케이션 코드 테스트와 분리해서 작성함에 유의
     public void duplicateKey() {
         dao.deleteAll();
