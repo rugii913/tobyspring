@@ -85,4 +85,22 @@ class UserServiceTest {
         assertThat(userWithLevelRead.getLevel()).isEqualTo(userWithLevel.getLevel());
         assertThat(userWithoutLevelRead.getLevel()).isEqualTo(Level.BASIC);
     }
+    
+    static class TestUserService extends UserService { // 테스트에서만 사용할 내부 스태틱 클래스
+        private String id;
+
+        public TestUserService(String id) { // 예외를 발생시킬 User 객체의 id를 지정할 수 있게 만든다.
+            this.id = id;
+        }
+
+        @Override
+        protected void upgradeLevel(User user) { // UserService의 메서드를 재정의
+            if (user.getId().equals(this.id)) throw new TestUserServiceException();
+            // -> 지정된 id를 가진 User 객체를 발견하면 예외를 던져서 작업을 강제로 중단시킨다.
+            super.upgradeLevel(user); // 나머지는 피상속 메서드를 그대로 따라감
+        }
+    }
+
+    static class TestUserServiceException extends RuntimeException { // 테스트용 예외
+    }
 }
