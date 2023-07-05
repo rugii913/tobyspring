@@ -13,7 +13,7 @@ public class UserService {
     public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
     public static final int MIN_RECOMMEND_FOR_GOLD = 30;
 
-    UserDao userDao;
+    private UserDao userDao;
     private PlatformTransactionManager transactionManager;
 
     public void setUserDao(UserDao userDao) {

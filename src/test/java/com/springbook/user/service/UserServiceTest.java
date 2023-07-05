@@ -27,6 +27,8 @@ class UserServiceTest {
     @Autowired
     UserService userService;
     @Autowired
+    UserDao userDao;
+    @Autowired
     PlatformTransactionManager transactionManager;
     List<User> users; // 테스트 픽스처
 
@@ -43,9 +45,9 @@ class UserServiceTest {
 
     @Test
     public void upgradeLevels() throws Exception {
-        userService.userDao.deleteAll();
+        userDao.deleteAll();
         for (User user : users) {
-            userService.userDao.add(user);
+            userDao.add(user);
         }
 
         userService.upgradeLevels();
@@ -59,7 +61,7 @@ class UserServiceTest {
 
     private void checkLevelUpgraded(User user, boolean upgraded) {
         // boolean upgraded로 어떤 레벨로 바뀔 것인가가 아니라, 다음 레벨로 업그레이드될 것인가 아닌가를 지정한다.
-        User userUpdate = userService.userDao.get(user.getId());
+        User userUpdate = userDao.get(user.getId());
         if (upgraded) {
             assertThat(userUpdate.getLevel()).isEqualTo(user.getLevel().nextLevel()); // 다음 레벨이 무엇인지는 Level에게 물어보면 된다.
         } else {
@@ -68,13 +70,13 @@ class UserServiceTest {
     }
 
     private void checkLevel(User user, Level expectedLevel) { // checkLevelUpgrade()로 개선하기 전 코드
-        User userUpdate = userService.userDao.get(user.getId());
+        User userUpdate = userDao.get(user.getId());
         assertThat(userUpdate.getLevel()).isEqualTo(expectedLevel);
     }
 
     @Test
     public void add() {
-        userService.userDao.deleteAll();
+        userDao.deleteAll();
 
         User userWithLevel = users.get(4); // GOLD 레벨 // -> GOLD 레벨이 이미 지정된 User라면 레벨을 초기화화지 않아야 한다.
         User userWithoutLevel = users.get(0);
@@ -84,8 +86,8 @@ class UserServiceTest {
         userService.add(userWithoutLevel);
 
         // DB에 저장된 결과를 가져와서 확인
-        User userWithLevelRead = userService.userDao.get(userWithLevel.getId());
-        User userWithoutLevelRead = userService.userDao.get(userWithoutLevel.getId());
+        User userWithLevelRead = userDao.get(userWithLevel.getId());
+        User userWithoutLevelRead = userDao.get(userWithoutLevel.getId());
 
         assertThat(userWithLevelRead.getLevel()).isEqualTo(userWithLevel.getLevel());
         assertThat(userWithoutLevelRead.getLevel()).isEqualTo(Level.BASIC);
@@ -95,12 +97,12 @@ class UserServiceTest {
     public void upgradeAllOrNothing() throws Exception {
         // 예외를 발생시킬 네 번째 사용자의 id를 넣어서 테스트용 UserService 대용 객체를 생성함
         UserService testUserService = new TestUserService(users.get(3).getId());
-        testUserService.setUserDao(this.userService.userDao); // userDao를 수동으로 DI
+        testUserService.setUserDao(this.userDao); // userDao를 수동으로 DI
         testUserService.setTransactionManager(transactionManager); // dataSource도 수동으로 DI
 
-        userService.userDao.deleteAll();
+        userDao.deleteAll();
         for (User user : users) {
-            userService.userDao.add(user);
+            userDao.add(user);
         }
 
         try { // TestUserService는 업그레이드 작업 중에 예외가 발생해야 한다. 정상 종료라면 문제가 있으니 실패
