@@ -25,15 +25,7 @@ public class UserService {
     }
 
     /*
-    // 트랜잭션 적용 전 p.338 5-23에서 작성한 upgradeLevels()
-    public void upgradeLevels() {
-        List<User> users = userDao.getAll();
-        for (User user : users) {
-            if (canUpgradeLevel(user)) {
-                upgradeLevel(user);
-            }
-        }
-    }
+    p.367, 5-41~44 관련 문제점: JDBC 트랜잭션 API, JdbcTemplate과 동기화하는 API로 인해 JDBC 기술을 사용하는 DAO에 의존하게 된다.
     */
 
     public void upgradeLevels() throws Exception {
