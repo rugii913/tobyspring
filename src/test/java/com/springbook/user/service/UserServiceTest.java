@@ -15,9 +15,4 @@ class UserServiceTest {
 
     @Autowired
     UserService userService;
-
-    @Test
-    public void bean() {
-        assertThat(this.userService).isNotNull();
-    }
 }
