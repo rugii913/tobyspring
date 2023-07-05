@@ -1,5 +1,6 @@
 package com.springbook.user.service;
 
+import com.springbook.user.dao.UserDao;
 import com.springbook.user.domain.Level;
 import com.springbook.user.domain.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -25,7 +27,7 @@ class UserServiceTest {
     @Autowired
     UserService userService;
     @Autowired
-    DataSource dataSource;
+    PlatformTransactionManager transactionManager;
     List<User> users; // 테스트 픽스처
 
     @BeforeEach
@@ -94,7 +96,7 @@ class UserServiceTest {
         // 예외를 발생시킬 네 번째 사용자의 id를 넣어서 테스트용 UserService 대용 객체를 생성함
         UserService testUserService = new TestUserService(users.get(3).getId());
         testUserService.setUserDao(this.userService.userDao); // userDao를 수동으로 DI
-        testUserService.setDataSource(this.dataSource); // dataSource도 수동으로 DI
+        testUserService.setTransactionManager(transactionManager); // dataSource도 수동으로 DI
 
         userService.userDao.deleteAll();
         for (User user : users) {

@@ -3,14 +3,10 @@ package com.springbook.user.service;
 import com.springbook.user.dao.UserDao;
 import com.springbook.user.domain.Level;
 import com.springbook.user.domain.User;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import javax.sql.DataSource;
 import java.util.List;
 
 public class UserService {
@@ -18,39 +14,36 @@ public class UserService {
     public static final int MIN_RECOMMEND_FOR_GOLD = 30;
 
     UserDao userDao;
-    private DataSource dataSource; // Connection을 생성할 때 사용할 DataSource를 DI 받는다.
+    private PlatformTransactionManager transactionManager;
 
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
     }
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
 
+    public void setTransactionManager(PlatformTransactionManager transactionManager) { // 프로퍼티 이름은 관례를 따라 transactionManager라고 만드는 것이 편리하다.
+        this.transactionManager = transactionManager;
+    }
     /*
     p.367, 5-41~44 관련 문제점: JDBC 트랜잭션 API, JdbcTemplate과 동기화하는 API로 인해 JDBC 기술을 사용하는 DAO에 의존하게 된다. 
     => 해결책: 트랜잭션 서비스 추상화 p.369~370 + 그림 5-6 스프링의 트랜잭션 추상화 계층
+    => 5-45로 해결 => 5-46 구현 클래스를 알지 못하도록 트랜잭션 매니저를 빈으로 분리
     */
 
     public void upgradeLevels() throws Exception {
-        PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
-        // DataSourceTransactionManager-> JDBC 트랜잭션 추상 오브젝트 생성
-
-        // 트랜잭션 시작
-        TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
+        // DI 받은 트랜잭션 매니저를 공유해서 사용한다. 멀티스레드 환경에서도 안전하다.
+        TransactionStatus status = this.transactionManager.getTransaction(new DefaultTransactionDefinition());
         
         try {
-            // 트랜잭션 안에서 진행되는 작업
             List<User> users = userDao.getAll();
             for (User user : users) {
                 if (canUpgradeLevel(user)) {
                     upgradeLevel(user);
                 }
             }
-            transactionManager.commit(status); // 트랜잭션 커밋
+            this.transactionManager.commit(status);
 
         } catch (Exception e) {
-            transactionManager.rollback(status); // 트랜잭션 롤백
+            this.transactionManager.rollback(status);
             throw e;
         }
     }
