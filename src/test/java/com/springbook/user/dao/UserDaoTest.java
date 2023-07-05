@@ -51,13 +51,11 @@ class UserDaoTest {
 
         // 첫 번째 User의 id로 get()을 실행하면, 첫 번째 User의 값을 가진 오브젝트를 돌려주는지 확인
         User userget1 = dao.get(user1.getId());
-        assertThat(userget1.getName()).isEqualTo(user1.getName());
-        assertThat(userget1.getPassword()).isEqualTo(user1.getPassword());
+        checkSameUser(userget1, user1);
 
         // 두 번째 User도 같은 방법으로 검증
         User userget2 = dao.get(user2.getId());
-        assertThat(userget2.getName()).isEqualTo(user2.getName());
-        assertThat(userget2.getPassword()).isEqualTo(user2.getPassword());
+        checkSameUser(userget2, user2);
     }
 
     @Test
@@ -110,13 +108,6 @@ class UserDaoTest {
         checkSameUser(user2, users3.get(2));
     }
 
-    // User 객체의 내용을 비교하는 검증 코드, 테스트에서 반복적으로 사용되므로 분리해놓았다.
-    private void checkSameUser(User user1, User user2) {
-        assertThat(user1.getId()).isEqualTo(user2.getId());
-        assertThat(user1.getName()).isEqualTo(user2.getName());
-        assertThat(user1.getPassword()).isEqualTo(user2.getPassword());
-    }
-
     @Test // 일반적으로 학습 테스트는 어플리케이션 코드 테스트와 분리해서 작성함에 유의
     public void duplicateKey() {
         dao.deleteAll();
@@ -143,5 +134,15 @@ class UserDaoTest {
             // set.translate(null, null, sqlEx)하면 SQLException을 DataAccessException 타입의 예외로 변환해준다. // task, sql 파라미터는 null로 둬도 테스트에 지장 없음
             assertThat(set.translate(null, null, sqlEx)).isExactlyInstanceOf(DuplicateKeyException.class);
         }
+    }
+
+    // User 객체의 내용을 비교하는 검증 코드, 테스트에서 반복적으로 사용되므로 분리해놓았다.
+    private void checkSameUser(User user1, User user2) {
+        assertThat(user1.getId()).isEqualTo(user2.getId());
+        assertThat(user1.getName()).isEqualTo(user2.getName());
+        assertThat(user1.getPassword()).isEqualTo(user2.getPassword());
+        assertThat(user1.getLevel()).isEqualTo(user2.getLevel());
+        assertThat(user1.getLogin()).isEqualTo(user2.getLogin());
+        assertThat(user1.getRecommend()).isEqualTo(user2.getRecommend());
     }
 }
