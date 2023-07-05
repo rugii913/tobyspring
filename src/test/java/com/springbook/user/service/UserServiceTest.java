@@ -85,6 +85,31 @@ class UserServiceTest {
         assertThat(userWithLevelRead.getLevel()).isEqualTo(userWithLevel.getLevel());
         assertThat(userWithoutLevelRead.getLevel()).isEqualTo(Level.BASIC);
     }
+
+    @Test
+    public void upgradeAllOrNothing() {
+        // 예외를 발생시킬 네 번째 사용자의 id를 넣어서 테스트용 UserService 대용 객체를 생성함
+        UserService testUserService = new TestUserService(users.get(3).getId());
+        testUserService.setUserDao(this.userService.userDao); // userDao를 수동으로 DI
+
+        userService.userDao.deleteAll();
+        for (User user : users) {
+            userService.userDao.add(user);
+        }
+
+        try { // TestUserService는 업그레이드 작업 중에 예외가 발생해야 한다. 정상 종료라면 문제가 있으니 실패
+            testUserService.upgradeLevels();
+            // upgradeLevels()가 정상적으로 수행되면 "TestUserServiceException expected" 메시지와 함께 테스트 실패
+            // upgradeLevels() 메서드 작업 중에 예외가 터져야 아래 fail(~) 부분이 실행되지 않는다.
+            fail("TestUserServiceException expected");
+        } catch (TestUserServiceException e) {
+            // TestUserService가 던져주는 예외를 잡고 아무 것도 안 해서, 정상 흐름인 듯이 계속 진행되도록 한다.
+            // 그 외의 예외가 발생하면 그냥 평범하게 예외가 터지면서 테스트 실패
+        }
+
+        // 예외가 발생하기 전에 레벨 변경이 있었던 사용자의 레벨이 처음 상태로 바뀌었는지 확인
+        checkLevelUpgraded(users.get(1), false);
+    }
     
     static class TestUserService extends UserService { // 테스트에서만 사용할 내부 스태틱 클래스
         private String id;
