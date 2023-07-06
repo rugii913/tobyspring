@@ -118,7 +118,6 @@ class UserServiceTest {
         // mock 객체가 제공하는 검증 기능을 통해
         // 어떤 메서드가 몇 번 호출됐는지, 파라미터는 무엇인지 확인할 수 있다.
         verify(mockUserDao, times(2)).update(any(User.class));
-        verify(mockUserDao, times(2)).update(any(User.class));
         verify(mockUserDao).update(users.get(1));
         assertThat(users.get(1).getLevel()).isEqualTo(Level.SILVER);
         verify(mockUserDao).update(users.get(3));
