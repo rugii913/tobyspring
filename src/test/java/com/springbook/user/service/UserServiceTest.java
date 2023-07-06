@@ -1,5 +1,6 @@
 package com.springbook.user.service;
 
+import com.springbook.proxy.TransactionHandler;
 import com.springbook.user.dao.UserDao;
 import com.springbook.user.domain.Level;
 import com.springbook.user.domain.User;
@@ -15,6 +16,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -155,9 +157,19 @@ class UserServiceTest {
         testUserService.setUserDao(this.userDao);
         testUserService.setMailSender(mailSender);
 
+        /*
+        // 이전 테스트 코드
         UserServiceTx txUserService = new UserServiceTx();
         txUserService.setTransactionManager(transactionManager);
         txUserService.setUserService(testUserService); // userService 필드에 testUserService를 넣어서 예외 터뜨릴 것
+        */
+        TransactionHandler txHandler = new TransactionHandler();
+        txHandler.setTarget(testUserService);
+        txHandler.setTransactionManager(transactionManager);
+        txHandler.setPattern("upgradeLevels"); // -> 트랜잭션 핸들러가 필요로 하는 정보와 객체를 DI 해준다.
+        // UserService 인터페이스 타입의 다이나믹 프록시 생성
+        UserService txUserService = (UserService) Proxy.newProxyInstance(
+                getClass().getClassLoader(), new Class[] { UserService.class }, txHandler);
 
         userDao.deleteAll();
         for (User user : users) {
