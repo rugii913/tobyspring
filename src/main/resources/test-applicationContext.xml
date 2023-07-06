@@ -33,4 +33,8 @@
     <bean id="mailSender" class="com.springbook.user.service.DummyMailSender">
         <property name="host" value="mail.server.com"/>
     </bean>
+
+    <bean id="message" class="com.springbook.learningtest.spring.factorybean.MessageFactoryBean">
+        <property name="text" value="Factory Bean"/>
+    </bean>
 </beans>
