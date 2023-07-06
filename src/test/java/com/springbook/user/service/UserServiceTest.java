@@ -95,7 +95,7 @@ class UserServiceTest {
         assertThat(userWithoutLevelRead.getLevel()).isEqualTo(Level.BASIC);
     }
 
-    @Test
+    @Test // cf. p.388 5-56 문제점 - 롤백해도 메일은 이미 보냈음
     public void upgradeAllOrNothing() throws Exception {
         // 예외를 발생시킬 네 번째 사용자의 id를 넣어서 테스트용 UserService 대용 객체를 생성함
         UserService testUserService = new TestUserService(users.get(3).getId());
