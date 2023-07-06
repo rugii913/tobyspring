@@ -9,8 +9,8 @@ CREATE TABLE users (
     `Name` VARCHAR(20) NOT NULL,
     `Password` VARCHAR(20) NOT NULL
 );
-
 ALTER TABLE users ADD COLUMN `Level` TINYINT NOT NULL, ADD COLUMN `Login` INT NOT NULL, ADD COLUMN `Recommend` INT NOT NULL;
+ALTER TABLE users ADD COLUMN `Email` VARCHAR(40);
 
 
 #-------------------------------------
@@ -32,9 +32,12 @@ CREATE TABLE users (
     `Name` VARCHAR(20) NOT NULL,
     `Password` VARCHAR(20) NOT NULL
 );
-
 ALTER TABLE users ADD COLUMN `Level` TINYINT NOT NULL, ADD COLUMN `Login` INT NOT NULL, ADD COLUMN `Recommend` INT NOT NULL;
+ALTER TABLE users ADD COLUMN `Email` VARCHAR(40);
 
 
 #-------------------------------------
 SELECT * FROM users;
+
+#-------------------------------------
+DELETE FROM users WHERE id = 'abcde';
