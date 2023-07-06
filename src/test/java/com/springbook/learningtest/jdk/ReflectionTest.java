@@ -31,5 +31,10 @@ public class ReflectionTest {
         assertThat(hello.sayHello("Toby")).isEqualTo("Hello Toby");
         assertThat(hello.sayHi("Toby")).isEqualTo("Hi Toby");
         assertThat(hello.sayThankYou("Toby")).isEqualTo("Thank You Toby");
+
+        Hello proxiedHello = new HelloUppercase(new HelloTarget()); // 프록시를 통해 target에 접근하도록 구성한다.
+        assertThat(proxiedHello.sayHello("Toby")).isEqualTo("HELLO TOBY");
+        assertThat(proxiedHello.sayHi("Toby")).isEqualTo("HI TOBY");
+        assertThat(proxiedHello.sayThankYou("Toby")).isEqualTo("THANK YOU TOBY");
     }
 }
