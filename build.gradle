@@ -24,6 +24,19 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	// p.137 DataSource 관련 https://mvnrepository.com/artifact/org.springframework/spring-jdbc
 	implementation 'org.springframework:spring-jdbc:5.3.28'
+	// 메일 관련 p.386
+	// 1. (참고) 자바 메일 https://shared.co.kr/219
+	implementation 'javax.mail:javax.mail-api:1.6.2'
+	// (참고) 스프링 부트 메일 https://xzio.tistory.com/2044
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	// 2. activation - The JavaBeans(TM) Activation Framework is used by the JavaMail(TM) API to manage MIME data
+	// 		=> 이건 이미 외부 라이브러리 있어서 가져오지 않음 - jakarta.activation-api:1.2.2
+	// https://mvnrepository.com/artifact/javax.activation/activation
+	// implementation 'javax.activation:activation:~~~~~~'
+	// 3. Support classes for integrating common third-party libraries into a Spring application context
+	// 		=> 이건 이미 외부 라이브러리 있어서 가져오지 않음 - org.springframework:spring-context-support:5.3.28
+	// https://mvnrepository.com/artifact/org.springframework/spring-context-support
+	// implementation 'org.springframework:spring-context-support:~~~~~~RELEASE'
 }
 
 tasks.named('test') {
