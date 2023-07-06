@@ -3,22 +3,14 @@ package com.springbook.user.service;
 import com.springbook.user.dao.UserDao;
 import com.springbook.user.domain.Level;
 import com.springbook.user.domain.User;
+import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.Properties;
 
 public class UserService {
     public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
@@ -26,19 +18,24 @@ public class UserService {
 
     private UserDao userDao;
     private PlatformTransactionManager transactionManager;
+    private MailSender mailSender;
 
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
     }
 
-    public void setTransactionManager(PlatformTransactionManager transactionManager) { // 프로퍼티 이름은 관례를 따라 transactionManager라고 만드는 것이 편리하다.
-        this.transactionManager = transactionManager;
-    }
     /*
-    p.367, 5-41~44 관련 문제점: JDBC 트랜잭션 API, JdbcTemplate과 동기화하는 API로 인해 JDBC 기술을 사용하는 DAO에 의존하게 된다. 
+    p.367, 5-41~44 관련 문제점: JDBC 트랜잭션 API, JdbcTemplate과 동기화하는 API로 인해 JDBC 기술을 사용하는 DAO에 의존하게 된다.
     => 해결책: 트랜잭션 서비스 추상화 p.369~370 + 그림 5-6 스프링의 트랜잭션 추상화 계층
     => 5-45로 해결 => 5-46 구현 클래스를 알지 못하도록 트랜잭션 매니저를 빈으로 분리
     */
+    public void setTransactionManager(PlatformTransactionManager transactionManager) { // 프로퍼티 이름은 관례를 따라 transactionManager라고 만드는 것이 편리하다.
+        this.transactionManager = transactionManager;
+    }
+
+    public void setMailSender(MailSender mailSender) {
+        this.mailSender = mailSender;
+    }
 
     public void upgradeLevels() throws Exception {
         // DI 받은 트랜잭션 매니저를 공유해서 사용한다. 멀티스레드 환경에서도 안전하다.
@@ -76,18 +73,13 @@ public class UserService {
     }
 
     private void sendUpgradeEMail(User user) {
-        // MailSender 구현 클래스의 오브젝트를 생성한다.
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("mail.server.com");
-
-        // MailMessage 인터페이스의 구현 클래스 오브젝트를 만들어 메일 내용을 작성한다.
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(user.getEmail());
         mailMessage.setFrom("useradmin@ksug.org");
         mailMessage.setSubject("Upgrade 안내");
         mailMessage.setText("사용자님의 등급이 " + user.getLevel().name() + "로 업그레이드 되었습니다.");
 
-        mailSender.send(mailMessage);
+        this.mailSender.send(mailMessage);
     }
 
     public void add(User user) {
