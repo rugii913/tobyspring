@@ -29,6 +29,8 @@ class UserServiceTest {
     @Autowired
     UserService userService;
     @Autowired
+    UserServiceImpl userServiceImpl;
+    @Autowired
     UserDao userDao;
     @Autowired
     PlatformTransactionManager transactionManager;
@@ -57,7 +59,7 @@ class UserServiceTest {
 
         // 메일 발송 결과를 테스트할 수 있도록 목 오브젝트를 만들어 userService의 의존 오브젝트로 주입해준다.
         MockMailSender mockMailSender = new MockMailSender();
-        userService.setMailSender(mockMailSender);
+        userServiceImpl.setMailSender(mockMailSender);
 
         // 업그레이드 테스트, 메일 발송이 일어나면 MockMailSender 오브젝트의 리스트에 그 결과가 저장된다.
         userService.upgradeLevels();
@@ -109,30 +111,34 @@ class UserServiceTest {
         assertThat(userWithoutLevelRead.getLevel()).isEqualTo(Level.BASIC);
     }
 
-    @Test // cf. p.388 5-56 문제점 - 롤백해도 메일은 이미 보냈음
+    @Test
     public void upgradeAllOrNothing() throws Exception {
-        // 예외를 발생시킬 네 번째 사용자의 id를 넣어서 테스트용 UserService 대용 객체를 생성함
+        /*
+        // 기존 코드
         UserService testUserService = new TestUserService(users.get(3).getId());
-        testUserService.setUserDao(this.userDao); // userDao를 수동으로 DI
-        testUserService.setTransactionManager(transactionManager); // dataSource도 수동으로 DI
+        testUserService.setUserDao(this.userDao);
+        testUserService.setTransactionManager(transactionManager);
         testUserService.setMailSender(mailSender);
+        */
+        TestUserService testUserService = new TestUserService(users.get(3).getId());
+        testUserService.setUserDao(this.userDao);
+        testUserService.setMailSender(mailSender);
+
+        UserServiceTx txUserService = new UserServiceTx();
+        txUserService.setTransactionManager(transactionManager);
+        txUserService.setUserService(testUserService); // userService 필드에 testUserService를 넣어서 예외 터뜨릴 것
 
         userDao.deleteAll();
         for (User user : users) {
             userDao.add(user);
         }
 
-        try { // TestUserService는 업그레이드 작업 중에 예외가 발생해야 한다. 정상 종료라면 문제가 있으니 실패
-            testUserService.upgradeLevels();
-            // upgradeLevels()가 정상적으로 수행되면 "TestUserServiceException expected" 메시지와 함께 테스트 실패
-            // upgradeLevels() 메서드 작업 중에 예외가 터져야 아래 fail(~) 부분이 실행되지 않는다.
+        try {
+            txUserService.upgradeLevels(); // 트랜잭션 기능을 분리한 txUserService 객체를 거쳐서 예외 발생용 TestUserService가 호출될 것
             fail("TestUserServiceException expected");
         } catch (TestUserServiceException e) {
-            // TestUserService가 던져주는 예외를 잡고 아무 것도 안 해서, 정상 흐름인 듯이 계속 진행되도록 한다.
-            // 그 외의 예외가 발생하면 그냥 평범하게 예외가 터지면서 테스트 실패
         }
 
-        // 예외가 발생하기 전에 레벨 변경이 있었던 사용자의 레벨이 처음 상태로 바뀌었는지 확인
         checkLevelUpgraded(users.get(1), false);
     }
     
