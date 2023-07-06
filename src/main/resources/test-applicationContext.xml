@@ -10,11 +10,13 @@
         <property name="password" value="book"/>
     </bean>
 
+    <!--데코레이터-->
     <bean id="userService" class="com.springbook.user.service.UserServiceTx">
         <property name="transactionManager" ref="transactionManager"/>
-        <property name="userService" ref="userServiceImpl"/>
+        <property name="userService" ref="userServiceImpl"/> <!--DI를 통한 다이나믹한 구성-->
     </bean>
 
+    <!--타깃-->
     <bean id="userServiceImpl" class="com.springbook.user.service.UserServiceImpl">
         <property name="userDao" ref="userDao"/>
         <property name="mailSender" ref="mailSender"/>
