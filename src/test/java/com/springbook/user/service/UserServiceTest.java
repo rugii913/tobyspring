@@ -51,31 +51,35 @@ class UserServiceTest {
     }
 
     @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    public void upgradeLevels() throws Exception {
-        userDao.deleteAll();
-        for (User user : users) {
-            userDao.add(user);
-        }
+    public void upgradeLevels(){
+        // 고립된 테스트에서는 테스트 대상 오브젝트를 직접 생성하면 된다. // -> this.로 필드 가져와서 쓰지 않음
+        UserServiceImpl userServiceImpl = new UserServiceImpl();
 
-        // 메일 발송 결과를 테스트할 수 있도록 목 오브젝트를 만들어 userService의 의존 오브젝트로 주입해준다.
+        MockUserDao mockUserDao = new MockUserDao(this.users); // mockUserDao를 직접 DI 해준다.
+        userServiceImpl.setUserDao(mockUserDao);
+
         MockMailSender mockMailSender = new MockMailSender();
         userServiceImpl.setMailSender(mockMailSender);
 
-        // 업그레이드 테스트, 메일 발송이 일어나면 MockMailSender 오브젝트의 리스트에 그 결과가 저장된다.
-        userService.upgradeLevels();
+        userServiceImpl.upgradeLevels();
 
-        checkLevelUpgraded(users.get(0), false);
-        checkLevelUpgraded(users.get(1), true);
-        checkLevelUpgraded(users.get(2), false);
-        checkLevelUpgraded(users.get(3), true);
-        checkLevelUpgraded(users.get(4), false);
+        List<User> updated = mockUserDao.getUpdated(); // -> mockUserDao에서 업데이트 결과를 가져온다.
+        // 업데이트 횟수와 정보를 확인
+        assertThat(updated.size()).isEqualTo(2);
+        checkUserAndLevel(updated.get(0), "joytouch", Level.SILVER);
+        checkUserAndLevel(updated.get(1), "madnite1", Level.GOLD);
 
-        // 목 오브젝트에 저장된 메일 수신자 목록을 가져와 업그레이드 대상과 일치하는지 확인한다.
+        // 메일 발송 관련 테스트는 기존 코드 그대로.
         List<String> request = mockMailSender.getRequests();
         assertThat(request.size()).isEqualTo(2);
         assertThat(request.get(0)).isEqualTo(users.get(1).getEmail());
         assertThat(request.get(1)).isEqualTo(users.get(3).getEmail());
+    }
+
+    // id와 level을 확인하는 간단한 헬퍼 메서드
+    private void checkUserAndLevel(User updatedUser, String expectedId, Level expectedLevel) {
+        assertThat(updatedUser.getId()).isEqualTo(expectedId);
+        assertThat(updatedUser.getLevel()).isEqualTo(expectedLevel);
     }
 
     private void checkLevelUpgraded(User user, boolean upgraded) {
@@ -169,7 +173,7 @@ class UserServiceTest {
 
         @Override
         public List<User> getAll() { // -> getAll()에 대해서는 stub으로서 동작
-            return null;
+            return this.users;
         }
 
         @Override
