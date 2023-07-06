@@ -13,6 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -112,14 +113,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void upgradeAllOrNothing() throws Exception {
-        /*
-        // 기존 코드
-        UserService testUserService = new TestUserService(users.get(3).getId());
-        testUserService.setUserDao(this.userDao);
-        testUserService.setTransactionManager(transactionManager);
-        testUserService.setMailSender(mailSender);
-        */
+    public void upgradeAllOrNothing() {
         TestUserService testUserService = new TestUserService(users.get(3).getId());
         testUserService.setUserDao(this.userDao);
         testUserService.setMailSender(mailSender);
@@ -158,5 +152,39 @@ class UserServiceTest {
     }
 
     static class TestUserServiceException extends RuntimeException { // 테스트용 예외
+    }
+
+    static class MockUserDao implements UserDao { // UserServiceTest 전용이므로 스태틱 내부 클래스로 만들었다.(p.419)
+
+        private List<User> users; // -> 레벨 업그레이드 후보 User 객체 목록
+        private List<User> updated = new ArrayList<>(); // -> 업그레이드 대상 오브젝트를 저장해둘 목록
+
+        public MockUserDao(List<User> users) {
+            this.users = users;
+        }
+
+        public List<User> getUpdated() {
+            return this.updated;
+        }
+
+        @Override
+        public List<User> getAll() { // -> getAll()에 대해서는 stub으로서 동작
+            return null;
+        }
+
+        @Override
+        public void update(User user) { // -> update(~)에 대해서는 mock으로서 동작
+            updated.add(user);
+        }
+
+        // 테스트에 사용되지 않는 메서드들
+        @Override
+        public void add(User user) { throw new UnsupportedOperationException(); }
+        @Override
+        public User get(String id) { throw new UnsupportedOperationException(); }
+        @Override
+        public void deleteAll() { throw new UnsupportedOperationException(); }
+        @Override
+        public Integer getCount() { throw new UnsupportedOperationException(); }
     }
 }
