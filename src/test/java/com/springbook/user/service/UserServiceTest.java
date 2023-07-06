@@ -7,18 +7,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSender;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 
 import static com.springbook.user.service.UserService.MIN_LOGCOUNT_FOR_SILVER;
 import static com.springbook.user.service.UserService.MIN_RECOMMEND_FOR_GOLD;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "/test-applicationContext.xml")
@@ -30,6 +30,8 @@ class UserServiceTest {
     UserDao userDao;
     @Autowired
     PlatformTransactionManager transactionManager;
+    @Autowired
+    MailSender mailSender;
     List<User> users; // 테스트 픽스처
 
     @BeforeEach
@@ -99,6 +101,7 @@ class UserServiceTest {
         UserService testUserService = new TestUserService(users.get(3).getId());
         testUserService.setUserDao(this.userDao); // userDao를 수동으로 DI
         testUserService.setTransactionManager(transactionManager); // dataSource도 수동으로 DI
+        testUserService.setMailSender(mailSender);
 
         userDao.deleteAll();
         for (User user : users) {
