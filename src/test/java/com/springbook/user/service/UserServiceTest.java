@@ -16,8 +16,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.springbook.user.service.UserService.MIN_LOGCOUNT_FOR_SILVER;
-import static com.springbook.user.service.UserService.MIN_RECOMMEND_FOR_GOLD;
+import static com.springbook.user.service.UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER;
+import static com.springbook.user.service.UserServiceImpl.MIN_RECOMMEND_FOR_GOLD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -136,7 +136,7 @@ class UserServiceTest {
         checkLevelUpgraded(users.get(1), false);
     }
     
-    static class TestUserService extends UserService { // 테스트에서만 사용할 내부 스태틱 클래스
+    static class TestUserService extends UserServiceImpl { // 테스트에서만 사용할 내부 스태틱 클래스
         private String id;
 
         public TestUserService(String id) { // 예외를 발생시킬 User 객체의 id를 지정할 수 있게 만든다.
