@@ -10,13 +10,15 @@
         <property name="password" value="book"/>
     </bean>
 
-    <!--데코레이터-->
-    <bean id="userService" class="com.springbook.user.service.UserServiceTx">
+    <!--UserService에 대한 트랜잭션 프록시 팩토리 빈 / 데코레이터 로직은 TransactionHandler 인스턴스가 갖고 있다.-->
+    <bean id="userService" class="com.springbook.user.service.TxProxyFactoryBean">
+        <property name="target" ref="userServiceImpl"/>
         <property name="transactionManager" ref="transactionManager"/>
-        <property name="userService" ref="userServiceImpl"/> <!--DI를 통한 다이나믹한 구성-->
+        <property name="pattern" value="upgradeLevels"/>
+        <property name="serviceInterface" value="com.springbook.user.service.UserService"/> <!--DI를 통한 다이나믹한 구성-->
     </bean>
 
-    <!--타깃-->
+    <!--target-->
     <bean id="userServiceImpl" class="com.springbook.user.service.UserServiceImpl">
         <property name="userDao" ref="userDao"/>
         <property name="mailSender" ref="mailSender"/>
