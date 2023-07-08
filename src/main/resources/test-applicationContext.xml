@@ -35,4 +35,10 @@
     <bean id="mailSender" class="com.springbook.user.service.DummyMailSender">
         <property name="host" value="mail.server.com"/>
     </bean>
+
+    <!--p.459 6-38~40 생략-->
+    <!--프록시 팩토리 빈 방식의 장점과 한계 중...-->
+    <!--한계 1. 한 번에 여러 개의 클래스에 공통적인 부가기능을 제공하려면 빈 설정에서 중복 코드 발생.
+    한계 2. 하나의 타겟에 여러 부가기능을 적용하려고 할 때도 서비스 빈 설정이 너무 길어짐.
+    한계 3. 같은 기능을 제공하는 동일한 코드임에도 target 객체가 달라지면 새로운 Handler 객체를 만들어내야 함-->
 </beans>
