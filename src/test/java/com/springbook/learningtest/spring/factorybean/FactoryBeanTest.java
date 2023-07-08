@@ -2,6 +2,7 @@ package com.springbook.learningtest.spring.factorybean;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -23,7 +24,16 @@ public class FactoryBeanTest {
 //        assertThat(((Message) message).getText()).isEqualTo("Factory Bean"); // -> 설정과 기능 확인
 
         Message message = context.getBean("message", Message.class); // bean의 타입을 지정하면 해당 타입으로 바로 꺼낼 수 있다.
+        // -> FactoryBean 인터페이스를 구현할 클래스(여기서는 MessageFactoryBean)을 스프링 빈으로 만들어두면
+        //    getObject()라는 메서드가 생성해주는 객체가 실제 빈 객체로 대치된다.
         assertThat(message).isExactlyInstanceOf(Message.class);
         assertThat(message.getText()).isEqualTo("Factory Bean");
+    }
+
+    @Test
+    public void getFactoryBean() {
+        Object factory = context.getBean("&message"); // -> &가 붙고 안 붙고에 따라 getBean() 메서드가 돌려주는 객체가 달라진다.
+        assertThat(factory).isInstanceOf(FactoryBean.class);
+        assertThat(factory).isExactlyInstanceOf(MessageFactoryBean.class);
     }
 }
