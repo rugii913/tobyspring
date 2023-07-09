@@ -11,11 +11,25 @@
     </bean>
 
     <!--UserService에 대한 트랜잭션 프록시 팩토리 빈 / 데코레이터 로직은 TransactionHandler 인스턴스가 갖고 있다.-->
+    <!--
     <bean id="userService" class="com.springbook.user.service.TxProxyFactoryBean">
         <property name="target" ref="userServiceImpl"/>
         <property name="transactionManager" ref="transactionManager"/>
         <property name="pattern" value="upgradeLevels"/>
-        <property name="serviceInterface" value="com.springbook.user.service.UserService"/> <!--DI를 통한 다이나믹한 구성-->
+        <property name="serviceInterface" value="com.springbook.user.service.UserService"/> &lt;!&ndash;DI를 통한 다이나믹한 구성&ndash;&gt;
+    </bean>
+    -->
+    <!--p.472 6-47 ProxyFactoryBean 설정-->
+    <bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="userServiceImpl"/>
+        <property name="interceptorNames">
+            <!--어드바이스와 어드바이저를 동시에 설정해줄 수 있는 프로퍼티.
+            리스트에 어드바이스나 어드바이저 빈 아이디를 값으로 넣어주면 된다.
+            기존의 ref 어트리뷰트를 사용하는 DI와는 방식이 다름에 주의-->
+            <list><!--한 개 이상의 <value> 태그를 넣을 수 있다.-->
+                <value>transactionAdvisor</value>
+            </list>
+        </property>
     </bean>
 
     <!--target-->
@@ -41,4 +55,18 @@
     <!--한계 1. 한 번에 여러 개의 클래스에 공통적인 부가기능을 제공하려면 빈 설정에서 중복 코드 발생.
     한계 2. 하나의 타겟에 여러 부가기능을 적용하려고 할 때도 서비스 빈 설정이 너무 길어짐.
     한계 3. 같은 기능을 제공하는 동일한 코드임에도 target 객체가 달라지면 새로운 Handler 객체를 만들어내야 함-->
+
+    <bean id="transactionAdvice" class="com.springbook.proxy.TransactionAdvice">
+        <property name="transactionManager" ref="transactionManager"/>
+    </bean>
+
+    <bean id="transactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
+        <property name="mappedName" value="upgrade*"/>
+    </bean>
+
+    <bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+        <property name="advice" ref="transactionAdvice"/>
+        <property name="pointcut" ref="transactionPointcut"/>
+    </bean>
+
 </beans>

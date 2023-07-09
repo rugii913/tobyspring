@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailSender;
@@ -159,6 +160,8 @@ class UserServiceTest {
         testUserService.setUserDao(this.userDao);
         testUserService.setMailSender(mailSender);
 
+        /*
+        // p.457 6-37 트랜잭션 프록시 팩토리 빈을 적용한 테스트
         TxProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", TxProxyFactoryBean.class);
         // -> 팩토리 빈 자체를 가져와야 하므로 빈 이름에 &를 반드시 넣어야 한다.
         txProxyFactoryBean.setTarget(testUserService);
@@ -166,6 +169,14 @@ class UserServiceTest {
         //    예외 발생 시 트랜잭션 롤백을 확인하기 위해서 UserServiceImpl 객체가 아닌 TestUserService 객체가 target이어야 한다.
         UserService txUserService = (UserService) txProxyFactoryBean.getObject();
         // -> 변경된 target 설정을 이용해서 트랜잭션 다이나믹 프록시 객체를 다시 생성한다.
+        */
+        
+        // p.474 6-48 ProxyFactoryBean을 이용한 트랜잭션 테스트
+        ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
+        // -> userService 빈은 이제 스프링의 ProxyFactoryBean이다.
+        txProxyFactoryBean.setTarget(testUserService);
+        UserService txUserService = (UserService) txProxyFactoryBean.getObject();
+        // -> FactoryBean 타입이므로 동일하게 getObject()로 프록시를 가져온다.
 
         userDao.deleteAll();
         for (User user : users) {
