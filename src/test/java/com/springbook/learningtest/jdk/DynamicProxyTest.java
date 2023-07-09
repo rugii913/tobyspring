@@ -4,6 +4,8 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.framework.ProxyFactoryBean;
+import org.springframework.aop.support.DefaultPointcutAdvisor;
+import org.springframework.aop.support.NameMatchMethodPointcut;
 
 import java.lang.reflect.Proxy;
 
@@ -42,5 +44,23 @@ public class DynamicProxyTest {
             //    MethodInvocation은 메서드 정보와 함께 target 객체를 알고 있기 때문이다.
             return ret.toUpperCase(); // -> 부가기능 적용
         }
+    }
+
+    @Test
+    public void pointcutAdvisor() { // ProxyFactoryBean은 앞에서 FactoryBean을 구현해서 만든 구현 클래스 TxFactoryBean과도 차이가 있다.
+        ProxyFactoryBean pfBean = new ProxyFactoryBean();
+        pfBean.setTarget(new HelloTarget()); // -> target 설정
+
+        NameMatchMethodPointcut pointcut = new NameMatchMethodPointcut(); // -> 메서드 이름을 비교해서 대상을 선정하는 알고리즘을 제공하는 포인트컷 생성
+        pointcut.setMappedName("sayH*"); // -> 이름 비교조건 설정, sayH로 시작하는 모든 메서드를 선택하게 한다.
+
+        pfBean.addAdvisor(new DefaultPointcutAdvisor(pointcut, new UppercaseAdvice()));
+        // -> 포인트컷과 어드바이스는 Advisor로 묶어서 한 번에 추가
+
+        Hello proxiedHello = (Hello) pfBean.getObject(); // -> FactoryBean이므로 getObject()로 생성된 프록시를 가져온다.
+
+        assertThat(proxiedHello.sayHello("Toby")).isEqualTo("HELLO TOBY");
+        assertThat(proxiedHello.sayHi("Toby")).isEqualTo("HI TOBY");
+        assertThat(proxiedHello.sayThankYou("Toby")).isNotEqualTo("THANK YOU TOBY"); // -> 메서드 이름이 포인트컷 조건에 맞지 않으므로, 부가 기능(대문자 변환)이 적용되지 않는다.
     }
 }
