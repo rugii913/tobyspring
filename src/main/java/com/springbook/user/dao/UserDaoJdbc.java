@@ -22,15 +22,21 @@ public class UserDaoJdbc implements UserDao {
         return user;
     };
     private JdbcTemplate jdbcTemplate;
+    private String sqlAdd;
 
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    public void setSqlAdd(String sqlAdd) {
+        this.sqlAdd = sqlAdd;
+    }
+
     public void add(final User user) {
         this.jdbcTemplate.update(
-                "insert into users(id, name, password, level, login, recommend, email) values (?,?,?,?,?,?,?)",
-                user.getId(), user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getEmail());
+                this.sqlAdd, // -> "insert into users..." sql을 제거하고 외부에서 주입받은 SQL을 사용하게 한다.
+                user.getId(), user.getName(), user.getPassword(), user.getEmail(),
+                user.getLevel().intValue(), user.getLogin(), user.getRecommend());
     }
 
     public User get(String id) {
