@@ -39,16 +39,6 @@
         <property name="host" value="mail.server.com"/>
     </bean>
 
-    <aop:config>
-        <aop:advisor advice-ref="transactionAdvice" pointcut="bean(*Service)"/>
-    </aop:config>
-
-    <tx:advice id="transactionAdvice"> <!--트랜잭션 매니저 빈 아이디가 transactionManager라면 생략할 수 있다.-->
-        <tx:attributes>
-            <!--순서가 바뀌면 안 됨-->
-            <tx:method name="get*" read-only="true"/>
-            <tx:method name="*"/>
-        </tx:attributes>
-    </tx:advice>
+    <tx:annotation-driven/>
 
 </beans>
