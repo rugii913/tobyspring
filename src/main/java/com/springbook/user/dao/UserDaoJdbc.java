@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.Map;
 
 public class UserDaoJdbc implements UserDao {
 
@@ -22,44 +23,44 @@ public class UserDaoJdbc implements UserDao {
         return user;
     };
     private JdbcTemplate jdbcTemplate;
-    private String sqlAdd;
+    private Map<String, String> sqlMap;
 
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public void setSqlAdd(String sqlAdd) {
-        this.sqlAdd = sqlAdd;
+    public void setSqlMap(Map<String, String> sqlMap) {
+        this.sqlMap = sqlMap;
     }
 
     public void add(final User user) {
         this.jdbcTemplate.update(
-                this.sqlAdd, // -> "insert into users..." sql을 제거하고 외부에서 주입받은 SQL을 사용하게 한다.
+                this.sqlMap.get("add"), // -> 프로퍼티로 제공받은 맵으로부터 키를 이용해서 필요한 SQL을 가져온다.
                 user.getId(), user.getName(), user.getPassword(), user.getEmail(),
                 user.getLevel().intValue(), user.getLogin(), user.getRecommend());
     }
 
     public User get(String id) {
-        return this.jdbcTemplate.queryForObject("select * from users where id = ?", this.userMapper, id);
+        return this.jdbcTemplate.queryForObject(sqlMap.get("get"), this.userMapper, id);
     }
 
     public void deleteAll() {
-        this.jdbcTemplate.update("delete from users");
+        this.jdbcTemplate.update(sqlMap.get("deleteAll"));
     }
 
     public Integer getCount() {
-        return this.jdbcTemplate.queryForObject("select count(*) from users", Integer.class);
+        return this.jdbcTemplate.queryForObject(sqlMap.get("getCount"), Integer.class);
     }
 
     public List<User> getAll() {
-        return this.jdbcTemplate.query("select * from users order by id", this.userMapper);
+        return this.jdbcTemplate.query(sqlMap.get("getAll"), this.userMapper);
     }
 
     @Override
     public void update(User user) {
         this.jdbcTemplate.update(
-                "update users set name = ?, password = ?, level = ?, login = ?, recommend = ?, email = ? where id = ?",
-                user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getEmail(), user.getId()
+                sqlMap.get("update"),
+                user.getName(), user.getPassword(), user.getEmail(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getId()
         );
     }
 }
