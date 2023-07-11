@@ -69,4 +69,6 @@
         <property name="pointcut" ref="transactionPointcut"/>
     </bean>
 
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+
 </beans>
