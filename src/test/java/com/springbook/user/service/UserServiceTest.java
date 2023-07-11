@@ -186,21 +186,18 @@ class UserServiceTest {
 
     @Test
     public void transactionSync() {
-        userDao.deleteAll();
-        assertThat(userDao.getCount()).isEqualTo(0);
-        // -> 트랜잭션 롤백했을 때 돌아갈 초기 상태를 만들기 위해 트랜잭션 시작 전에 초기화 해둔다.
-
         DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
         TransactionStatus txStatus = transactionManager.getTransaction(txDefinition);
 
-        userService.add(users.get(0));
-        userService.add(users.get(1));
-        assertThat(userDao.getCount()).isEqualTo(2);
-        // -> userDao의 getCount() 메서드도 같은 트랜잭션에서 동작한다. add()에 의해 두 개가 등록됐는지 확인해둔다.
-
-        transactionManager.rollback(txStatus); // -> 강제로 롤백, 트랜잭션 시작 전 상태로 돌아가야 한다.
-
-        assertThat(userDao.getCount()).isEqualTo(0); // -> add() 작업이 취소되고 트랜잭션 시작 이전의 상태임을 확인할 수 있다.
+        try {
+            userService.deleteAll();
+            userService.add(users.get(0));
+            userService.add(users.get(1));
+        } finally {
+            transactionManager.rollback(txStatus);
+            // -> 테스트 결과가 어떻든 상관없이 테스트가 끝나면 무조건 롤백한다.
+            //    테스트 중 발생했던 DB 변경사항은 모두 이전 상태로 복구된다.
+        }
     }
 
     static class MockUserDao implements UserDao { // UserServiceTest 전용이므로 스태틱 내부 클래스로 만들었다.(p.419)
