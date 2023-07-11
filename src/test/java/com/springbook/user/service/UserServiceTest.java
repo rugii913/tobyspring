@@ -17,6 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.ArrayList;
@@ -185,19 +186,11 @@ class UserServiceTest {
     }
 
     @Test
+    @Transactional(readOnly = true)
     public void transactionSync() {
-        DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
-        TransactionStatus txStatus = transactionManager.getTransaction(txDefinition);
-
-        try {
-            userService.deleteAll();
-            userService.add(users.get(0));
-            userService.add(users.get(1));
-        } finally {
-            transactionManager.rollback(txStatus);
-            // -> 테스트 결과가 어떻든 상관없이 테스트가 끝나면 무조건 롤백한다.
-            //    테스트 중 발생했던 DB 변경사항은 모두 이전 상태로 복구된다.
-        }
+        userService.deleteAll();
+        userService.add(users.get(0));
+        userService.add(users.get(1));
     }
 
     static class MockUserDao implements UserDao { // UserServiceTest 전용이므로 스태틱 내부 클래스로 만들었다.(p.419)
