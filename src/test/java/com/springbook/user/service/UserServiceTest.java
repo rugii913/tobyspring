@@ -13,6 +13,7 @@ import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -186,7 +187,8 @@ class UserServiceTest {
     }
 
     @Test
-    @Transactional(readOnly = true)
+    @Transactional
+    @Rollback(false)
     public void transactionSync() {
         userService.deleteAll();
         userService.add(users.get(0));
