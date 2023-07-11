@@ -12,14 +12,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +33,9 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "/test-applicationContext.xml")
-@DirtiesContext // -> 컨텍스트의 DI 설정을 변경하는 테스트라는 것을 알려준다.
+@Transactional
+//@Rollback(value = false)
+@Commit
 class UserServiceTest {
 
     @Autowired
@@ -140,6 +141,7 @@ class UserServiceTest {
     }
 
     @Test
+    @Rollback
     public void add() {
         userDao.deleteAll();
 
@@ -159,6 +161,7 @@ class UserServiceTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
     // -> 컨텍스트의 빈 설정을 변경하지 않으므로 @DirtiesContext 어노테이션 제거,
     //    모든 테스트를 위한 DI 작업은 설정파일을 통해 서버에서 진행되므로 테스트 코드 자체는 단순해진다.
     protected void upgradeAllOrNothing() throws Exception {
@@ -182,13 +185,12 @@ class UserServiceTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
     public void readOnlyTransactionAttribute() {
         assertThatThrownBy(() -> testUserService.getAll()).isExactlyInstanceOf(TransientDataAccessResourceException.class);
     }
 
     @Test
-    @Transactional
-    @Rollback(false)
     public void transactionSync() {
         userService.deleteAll();
         userService.add(users.get(0));
