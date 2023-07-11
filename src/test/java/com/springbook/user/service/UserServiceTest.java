@@ -186,18 +186,21 @@ class UserServiceTest {
 
     @Test
     public void transactionSync() {
+        userDao.deleteAll();
+        assertThat(userDao.getCount()).isEqualTo(0);
+        // -> 트랜잭션 롤백했을 때 돌아갈 초기 상태를 만들기 위해 트랜잭션 시작 전에 초기화 해둔다.
+
         DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
-        txDefinition.setReadOnly(true); // -> 읽기전용 트랜잭션으로 바꾼다.
-
         TransactionStatus txStatus = transactionManager.getTransaction(txDefinition);
-
-//        userService.deleteAll(); // -> 테스트 코드에서 시작한 트랜잭션에 참여한다면, 읽기전용 속성을 위반했으므로 예외가 발생해야 한다.
-        userDao.deleteAll(); // -> JdbcTemplate을 통해 이미 시작된 트랙잭션이 있다면 자동으로 참여한다. 따라서 예외가 발생한다.
 
         userService.add(users.get(0));
         userService.add(users.get(1));
+        assertThat(userDao.getCount()).isEqualTo(2);
+        // -> userDao의 getCount() 메서드도 같은 트랜잭션에서 동작한다. add()에 의해 두 개가 등록됐는지 확인해둔다.
 
-        transactionManager.commit(txStatus); // -> 앞에서 시작한 트랜잭션을 커밋
+        transactionManager.rollback(txStatus); // -> 강제로 롤백, 트랜잭션 시작 전 상태로 돌아가야 한다.
+
+        assertThat(userDao.getCount()).isEqualTo(0); // -> add() 작업이 취소되고 트랜잭션 시작 이전의 상태임을 확인할 수 있다.
     }
 
     static class MockUserDao implements UserDao { // UserServiceTest 전용이므로 스태틱 내부 클래스로 만들었다.(p.419)
