@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/aop
+                           http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
         <property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
@@ -32,25 +36,13 @@
         <property name="host" value="mail.server.com"/>
     </bean>
 
-    <!--p.459 6-38~40 생략-->
-    <!--프록시 팩토리 빈 방식의 장점과 한계 중...-->
-    <!--한계 1. 한 번에 여러 개의 클래스에 공통적인 부가기능을 제공하려면 빈 설정에서 중복 코드 발생.
-    한계 2. 하나의 타겟에 여러 부가기능을 적용하려고 할 때도 서비스 빈 설정이 너무 길어짐.
-    한계 3. 같은 기능을 제공하는 동일한 코드임에도 target 객체가 달라지면 새로운 Handler 객체를 만들어내야 함-->
+    <aop:config>
+        <aop:pointcut id="transactionPointcut" expression="execution(* *..*ServiceImpl.upgrade*(..))"/>
+        <aop:advisor advice-ref="transactionAdvice" pointcut-ref="transactionPointcut"/>
+    </aop:config>
 
     <bean id="transactionAdvice" class="com.springbook.proxy.TransactionAdvice">
         <property name="transactionManager" ref="transactionManager"/>
     </bean>
-
-    <bean id="transactionPointcut" class="org.springframework.aop.aspectj.AspectJExpressionPointcut">
-        <property name="expression" value="execution(* *..*ServiceImpl.upgrade*(..))"/>
-    </bean>
-
-    <bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
-        <property name="advice" ref="transactionAdvice"/>
-        <property name="pointcut" ref="transactionPointcut"/>
-    </bean>
-
-    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
 
 </beans>
