@@ -37,9 +37,6 @@ class UserServiceTest {
     UserService userService;
     @Autowired
     UserService testUserService;
-    // -> 같은 타입의 빈이 두 개 존재하기 때문에 필드 이름을 기준으로 주입될 빈이 결정된다.
-    //    자동 프록시 생성기에 의해 트랜잭션 부가기능이 testUserService 빈에 적용됐는지를 확인하는 것이 목적이다.
-    //    "오토와이어링할 수 없습니다. 'TestUserServiceImpl' 타입의 bean을 찾을 수 없습니다." 라고 빨간줄 뜨는데 무시
     @Autowired
     UserDao userDao;
     @Autowired

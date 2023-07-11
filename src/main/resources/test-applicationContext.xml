@@ -17,7 +17,7 @@
     </bean>
 
     <!--스태틱 멤버 클래스는 $로 지정한다.-->
-    <bean id="testUserService" class="com.springbook.user.service.UserServiceImpl$TestUserServiceImpl"
+    <bean id="testUserService" class="com.springbook.user.service.UserServiceImpl$TestUserService"
         parent="userService"/>
 
     <bean id="userDao" class="com.springbook.user.dao.UserDaoJdbc">

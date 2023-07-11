@@ -5,9 +5,6 @@ import com.springbook.user.domain.Level;
 import com.springbook.user.domain.User;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.List;
 
@@ -76,7 +73,7 @@ public class UserServiceImpl implements UserService {
         - 앞으로 변경이 일어난다면 어떤 것이 있을 수 있고, 그 변화에 쉽게 대응할 수 있게 작성되어 있는가?
      */
 
-    static class TestUserServiceImpl extends UserServiceImpl { // 테스트에서만 사용할 내부 스태틱 클래스
+    static class TestUserService extends UserServiceImpl { // 테스트에서만 사용할 내부 스태틱 클래스
         private String id = "madnite1"; // -> 테스트 픽스처의 users(3)의 id 값을 고정시켜버렸다.
 
         @Override
