@@ -16,6 +16,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -184,10 +186,19 @@ class UserServiceTest {
 
     @Test
     public void transactionSync() {
+        DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
+        // -> 트랜잭션 정의는 기본값을 사용
+        TransactionStatus txStatus = transactionManager.getTransaction(txDefinition);
+        // -> 트랜잭션 매니저에게 트랜잭션을 요청한다.
+        //    기존에 시작된 트랙잭션이 없으므로 새로운 트랜잭션을 시작하고 트랜잭션 정보를 돌려준다.
+        //    또한 만들어진 트랜잭션을 다른 곳에서 사용할 수 있도록 동기화한다.
+
         userService.deleteAll();
 
         userService.add(users.get(0));
         userService.add(users.get(1));
+
+        transactionManager.commit(txStatus); // -> 앞에서 시작한 트랜잭션을 커밋
     }
 
     static class MockUserDao implements UserDao { // UserServiceTest 전용이므로 스태틱 내부 클래스로 만들었다.(p.419)
