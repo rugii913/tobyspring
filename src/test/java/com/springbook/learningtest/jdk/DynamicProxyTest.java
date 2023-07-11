@@ -3,6 +3,8 @@ package com.springbook.learningtest.jdk;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.ClassFilter;
+import org.springframework.aop.Pointcut;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.aop.support.NameMatchMethodPointcut;
@@ -62,5 +64,54 @@ public class DynamicProxyTest {
         assertThat(proxiedHello.sayHello("Toby")).isEqualTo("HELLO TOBY");
         assertThat(proxiedHello.sayHi("Toby")).isEqualTo("HI TOBY");
         assertThat(proxiedHello.sayThankYou("Toby")).isNotEqualTo("THANK YOU TOBY"); // -> 메서드 이름이 포인트컷 조건에 맞지 않으므로, 부가 기능(대문자 변환)이 적용되지 않는다.
+    }
+
+    @Test
+    public void classNamePointcutAdvisor() {
+        //포인트컷 준비
+        NameMatchMethodPointcut classMethodPointcut = new NameMatchMethodPointcut() {
+            @Override
+            public ClassFilter getClassFilter() { // -> 익명 내부 클래스 방식으로 클래스를 정의한다.
+                return new ClassFilter() {
+                    @Override
+                    public boolean matches(Class<?> clazz) {
+                        return clazz.getSimpleName().startsWith("HelloT"); // -> 클래스 이름이 HelloT로 시작하는 것만 선정한다.
+                    }
+                };
+            }
+        };
+
+        classMethodPointcut.setMappedName("sayH*"); // -> sayH로 시작하는 메서드 이름을 가진 메서드만 선정한다.
+
+        // 테스트
+        checkAdviced(new HelloTarget(), classMethodPointcut, true); // -> HelloT로 시작하므로 적용 클래스다.
+
+        class HelloWorld extends HelloTarget {
+        }
+        checkAdviced(new HelloWorld(), classMethodPointcut, false); // -> HelloT로 시작하지 않으므로 적용 클래스다.
+
+        class HelloToby extends HelloTarget {
+        }
+        checkAdviced(new HelloToby(), classMethodPointcut, true); // -> HelloT로 시작하므로 적용 클래스다.
+
+    }
+
+    private void checkAdviced(Object target, Pointcut pointcut, boolean adviced)  {
+        // boolean adviced -> ClassFilter의 적용 대상인지 expected에 반영
+
+        ProxyFactoryBean pfBean = new ProxyFactoryBean();
+        pfBean.setTarget(target);
+        pfBean.addAdvisor(new DefaultPointcutAdvisor(pointcut, new UppercaseAdvice()));
+        Hello proxiedHello = (Hello) pfBean.getObject();
+
+        if (adviced) { // 클래스가 어드바이스 적용 대상 -> 메서드 선정 방식을 통해 어드바이스 적용
+            assertThat(proxiedHello.sayHello("Toby")).isEqualTo("HELLO TOBY");
+            assertThat(proxiedHello.sayHi("Toby")).isEqualTo("HI TOBY");
+            assertThat(proxiedHello.sayThankYou("Toby")).isEqualTo("Thank You Toby");
+        } else { // 클래스 자체가 어드바이스 적용 대상이 아닌 것으로 예상되는 경우
+            assertThat(proxiedHello.sayHello("Toby")).isEqualTo("Hello Toby");
+            assertThat(proxiedHello.sayHi("Toby")).isEqualTo("Hi Toby");
+            assertThat(proxiedHello.sayThankYou("Toby")).isEqualTo("Thank You Toby");
+        }
     }
 }
