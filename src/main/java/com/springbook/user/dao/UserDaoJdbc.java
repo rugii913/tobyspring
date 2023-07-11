@@ -2,6 +2,7 @@ package com.springbook.user.dao;
 
 import com.springbook.user.domain.Level;
 import com.springbook.user.domain.User;
+import com.springbook.user.sqlservice.SqlService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -24,6 +25,7 @@ public class UserDaoJdbc implements UserDao {
     };
     private JdbcTemplate jdbcTemplate;
     private Map<String, String> sqlMap;
+    private SqlService sqlService;
 
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -33,33 +35,37 @@ public class UserDaoJdbc implements UserDao {
         this.sqlMap = sqlMap;
     }
 
+    public UserDaoJdbc(SqlService sqlService) {
+        this.sqlService = sqlService;
+    }
+
     public void add(final User user) {
         this.jdbcTemplate.update(
-                this.sqlMap.get("add"), // -> 프로퍼티로 제공받은 맵으로부터 키를 이용해서 필요한 SQL을 가져온다.
+                this.sqlMap.get("userAdd"), // -> 프로퍼티로 제공받은 맵으로부터 키를 이용해서 필요한 SQL을 가져온다.
                 user.getId(), user.getName(), user.getPassword(), user.getEmail(),
                 user.getLevel().intValue(), user.getLogin(), user.getRecommend());
     }
 
     public User get(String id) {
-        return this.jdbcTemplate.queryForObject(sqlMap.get("get"), this.userMapper, id);
+        return this.jdbcTemplate.queryForObject(sqlService.getSql("userGet"), this.userMapper, id);
     }
 
     public void deleteAll() {
-        this.jdbcTemplate.update(sqlMap.get("deleteAll"));
+        this.jdbcTemplate.update(sqlService.getSql("userDeleteAll"));
     }
 
     public Integer getCount() {
-        return this.jdbcTemplate.queryForObject(sqlMap.get("getCount"), Integer.class);
+        return this.jdbcTemplate.queryForObject(sqlService.getSql("userGetCount"), Integer.class);
     }
 
     public List<User> getAll() {
-        return this.jdbcTemplate.query(sqlMap.get("getAll"), this.userMapper);
+        return this.jdbcTemplate.query(sqlService.getSql("userGetAll"), this.userMapper);
     }
 
     @Override
     public void update(User user) {
         this.jdbcTemplate.update(
-                sqlMap.get("update"),
+                sqlService.getSql("userUpdate"),
                 user.getName(), user.getPassword(), user.getEmail(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getId()
         );
     }
