@@ -94,6 +94,14 @@ public class UserServiceImpl implements UserService {
             // -> 지정된 id를 가진 User 객체를 발견하면 예외를 던져서 작업을 강제로 중단시킨다.
             super.upgradeLevel(user); // 나머지는 피상속 메서드를 그대로 따라감
         }
+
+        @Override
+        public List<User> getAll() { // -> 읽기전용 트랜잭션의 대상인 get으로 시작하는 메서드를 재정의
+            for (User user : super.getAll()) {
+                super.update(user); // -> 쓰기 시도를 하면 읽기전용 속성으로 인해 예외가 발생해야 한다.
+            }
+            return null; // -> 메서드가 끝나기 전에 예외가 발생할 것이므로 반환값은 별 의미는 없다.
+        }
     }
 
     static class TestUserServiceException extends RuntimeException { // 테스트용 예외

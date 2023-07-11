@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
@@ -23,6 +24,7 @@ import java.util.List;
 import static com.springbook.user.service.UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER;
 import static com.springbook.user.service.UserServiceImpl.MIN_RECOMMEND_FOR_GOLD;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
@@ -173,6 +175,11 @@ class UserServiceTest {
     @Test
     public void advisorAutoProxyCreator() {
         assertThat(testUserService).isInstanceOf(java.lang.reflect.Proxy.class);
+    }
+
+    @Test
+    public void readOnlyTransactionAttribute() {
+        assertThatThrownBy(() -> testUserService.getAll()).isExactlyInstanceOf(TransientDataAccessResourceException.class);
     }
 
     static class MockUserDao implements UserDao { // UserServiceTest 전용이므로 스태틱 내부 클래스로 만들었다.(p.419)
