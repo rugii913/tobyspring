@@ -64,11 +64,7 @@
     <tx:advice id="transactionAdvice" transaction-manager="transactionManager">
         <!--트랜잭션 매니저의 빈 아이디가 transactionManager라면 생략 가능-->
         <tx:attributes>
-            <tx:method name="get*" propagation="REQUIRED" read-only="true" timeout="30"/>
-            <tx:method name="upgrade*" propagation="REQUIRES_NEW" isolation="SERIALIZABLE"/>
-            <!--Enumeration으로 스키마에 값이 정의되어 있으므로 오타가 있으면 XML 유효성 검사만으로 확인 가능-->
-            <tx:method name="*" propagation="REQUIRED"/>
-            <!--디폴트 값이 스키마에 정의되어 있으므로 REQUIRED라면 생략 가능-->
+            <tx:method name="*"/> <!--모든 target 메서드에 기본 트랜잭션 속성 지정-->
         </tx:attributes>
     </tx:advice>
 </beans>
