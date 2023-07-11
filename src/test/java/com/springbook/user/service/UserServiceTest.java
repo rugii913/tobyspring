@@ -182,6 +182,14 @@ class UserServiceTest {
         assertThatThrownBy(() -> testUserService.getAll()).isExactlyInstanceOf(TransientDataAccessResourceException.class);
     }
 
+    @Test
+    public void transactionSync() {
+        userService.deleteAll();
+
+        userService.add(users.get(0));
+        userService.add(users.get(1));
+    }
+
     static class MockUserDao implements UserDao { // UserServiceTest 전용이므로 스태틱 내부 클래스로 만들었다.(p.419)
 
         private List<User> users; // -> 레벨 업그레이드 후보 User 객체 목록
