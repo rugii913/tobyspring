@@ -24,24 +24,19 @@ public class UserDaoJdbc implements UserDao {
         return user;
     };
     private JdbcTemplate jdbcTemplate;
-    private Map<String, String> sqlMap;
     private SqlService sqlService;
 
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public void setSqlMap(Map<String, String> sqlMap) {
-        this.sqlMap = sqlMap;
-    }
-
-    public UserDaoJdbc(SqlService sqlService) {
+    public void setSqlService(SqlService sqlService) {
         this.sqlService = sqlService;
     }
 
     public void add(final User user) {
         this.jdbcTemplate.update(
-                this.sqlMap.get("userAdd"), // -> 프로퍼티로 제공받은 맵으로부터 키를 이용해서 필요한 SQL을 가져온다.
+                this.sqlService.getSql("userAdd"), // -> 프로퍼티로 제공받은 맵으로부터 키를 이용해서 필요한 SQL을 가져온다.
                 user.getId(), user.getName(), user.getPassword(), user.getEmail(),
                 user.getLevel().intValue(), user.getLogin(), user.getRecommend());
     }
