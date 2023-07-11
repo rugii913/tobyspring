@@ -187,13 +187,12 @@ class UserServiceTest {
     @Test
     public void transactionSync() {
         DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
-        // -> 트랜잭션 정의는 기본값을 사용
-        TransactionStatus txStatus = transactionManager.getTransaction(txDefinition);
-        // -> 트랜잭션 매니저에게 트랜잭션을 요청한다.
-        //    기존에 시작된 트랙잭션이 없으므로 새로운 트랜잭션을 시작하고 트랜잭션 정보를 돌려준다.
-        //    또한 만들어진 트랜잭션을 다른 곳에서 사용할 수 있도록 동기화한다.
+        txDefinition.setReadOnly(true); // -> 읽기전용 트랜잭션으로 바꾼다.
 
-        userService.deleteAll();
+        TransactionStatus txStatus = transactionManager.getTransaction(txDefinition);
+
+//        userService.deleteAll(); // -> 테스트 코드에서 시작한 트랜잭션에 참여한다면, 읽기전용 속성을 위반했으므로 예외가 발생해야 한다.
+        userDao.deleteAll(); // -> JdbcTemplate을 통해 이미 시작된 트랙잭션이 있다면 자동으로 참여한다. 따라서 예외가 발생한다.
 
         userService.add(users.get(0));
         userService.add(users.get(1));
