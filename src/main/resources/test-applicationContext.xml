@@ -43,7 +43,7 @@
     </bean>
 
     <bean id="transactionPointcut" class="com.springbook.proxy.NameMatchClassMethodPointcut">
-        <property name="mappedClassName" value="*asdfServiceImpl"/> <!--클래스 이름 패턴-->
+        <property name="mappedClassName" value="*ServiceImpl"/> <!--클래스 이름 패턴-->
         <property name="mappedName" value="upgrade*"/> <!--메서드 이름 패턴-->
     </bean>
 
