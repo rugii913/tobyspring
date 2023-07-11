@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailSender;
@@ -37,7 +36,10 @@ class UserServiceTest {
     @Autowired
     UserService userService;
     @Autowired
-    UserServiceImpl userServiceImpl;
+    UserService testUserService;
+    // -> 같은 타입의 빈이 두 개 존재하기 때문에 필드 이름을 기준으로 주입될 빈이 결정된다.
+    //    자동 프록시 생성기에 의해 트랜잭션 부가기능이 testUserService 빈에 적용됐는지를 확인하는 것이 목적이다.
+    //    "오토와이어링할 수 없습니다. 'TestUserServiceImpl' 타입의 bean을 찾을 수 없습니다." 라고 빨간줄 뜨는데 무시
     @Autowired
     UserDao userDao;
     @Autowired
@@ -154,60 +156,21 @@ class UserServiceTest {
     }
 
     @Test
-    @DirtiesContext // -> 다이나믹 프록시 팩토리 빈을 직접 만들어 사용할 때는 없앴다가 다시 등장한 컨텍스트 무효화 어노테이션
+    // -> 컨텍스트의 빈 설정을 변경하지 않으므로 @DirtiesContext 어노테이션 제거,
+    //    모든 테스트를 위한 DI 작업은 설정파일을 통해 서버에서 진행되므로 테스트 코드 자체는 단순해진다.
     protected void upgradeAllOrNothing() throws Exception {
-        TestUserService testUserService = new TestUserService(users.get(3).getId());
-        testUserService.setUserDao(this.userDao);
-        testUserService.setMailSender(mailSender);
-
-        /*
-        // p.457 6-37 트랜잭션 프록시 팩토리 빈을 적용한 테스트
-        TxProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", TxProxyFactoryBean.class);
-        // -> 팩토리 빈 자체를 가져와야 하므로 빈 이름에 &를 반드시 넣어야 한다.
-        txProxyFactoryBean.setTarget(testUserService);
-        // -> test-applicationContext.xml에서는 TxProxyFactoryBean의 target을 UserServiceImpl로 받았는데,
-        //    예외 발생 시 트랜잭션 롤백을 확인하기 위해서 UserServiceImpl 객체가 아닌 TestUserService 객체가 target이어야 한다.
-        UserService txUserService = (UserService) txProxyFactoryBean.getObject();
-        // -> 변경된 target 설정을 이용해서 트랜잭션 다이나믹 프록시 객체를 다시 생성한다.
-        */
-        
-        // p.474 6-48 ProxyFactoryBean을 이용한 트랜잭션 테스트
-        ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
-        // -> userService 빈은 이제 스프링의 ProxyFactoryBean이다.
-        txProxyFactoryBean.setTarget(testUserService);
-        UserService txUserService = (UserService) txProxyFactoryBean.getObject();
-        // -> FactoryBean 타입이므로 동일하게 getObject()로 프록시를 가져온다.
-
         userDao.deleteAll();
         for (User user : users) {
             userDao.add(user);
         }
 
         try {
-            txUserService.upgradeLevels(); // 트랜잭션 기능을 분리한 txUserService 객체를 거쳐서 예외 발생용 TestUserService가 호출될 것
+            this.testUserService.upgradeLevels();
             fail("TestUserServiceException expected");
-        } catch (TestUserServiceException e) {
+        } catch (UserServiceImpl.TestUserServiceException e) {
         }
 
         checkLevelUpgraded(users.get(1), false);
-    }
-    
-    static class TestUserService extends UserServiceImpl { // 테스트에서만 사용할 내부 스태틱 클래스
-        private String id;
-
-        public TestUserService(String id) { // 예외를 발생시킬 User 객체의 id를 지정할 수 있게 만든다.
-            this.id = id;
-        }
-
-        @Override
-        protected void upgradeLevel(User user) { // UserService의 메서드를 재정의
-            if (user.getId().equals(this.id)) throw new TestUserServiceException();
-            // -> 지정된 id를 가진 User 객체를 발견하면 예외를 던져서 작업을 강제로 중단시킨다.
-            super.upgradeLevel(user); // 나머지는 피상속 메서드를 그대로 따라감
-        }
-    }
-
-    static class TestUserServiceException extends RuntimeException { // 테스트용 예외
     }
 
     static class MockUserDao implements UserDao { // UserServiceTest 전용이므로 스태틱 내부 클래스로 만들었다.(p.419)
