@@ -42,9 +42,8 @@
         <property name="transactionManager" ref="transactionManager"/>
     </bean>
 
-    <bean id="transactionPointcut" class="com.springbook.proxy.NameMatchClassMethodPointcut">
-        <property name="mappedClassName" value="*ServiceImpl"/> <!--클래스 이름 패턴-->
-        <property name="mappedName" value="upgrade*"/> <!--메서드 이름 패턴-->
+    <bean id="transactionPointcut" class="org.springframework.aop.aspectj.AspectJExpressionPointcut">
+        <property name="expression" value="execution(* *..*ServiceImpl.upgrade*(..))"/>
     </bean>
 
     <bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
