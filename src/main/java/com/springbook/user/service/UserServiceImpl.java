@@ -23,6 +23,25 @@ public class UserServiceImpl implements UserService {
         this.mailSender = mailSender;
     }
 
+    public void add(User user) {
+        if (user.getLevel() == null) {
+            user.setLevel(Level.BASIC);
+        }
+        userDao.add(user);
+    }
+
+    //--------------------
+    // DAO 메서드와 1:1 대응되는 CRUD 메서드이지만 add()처럼 단순 위임 이상의 로직을 가질 수 있다.
+    @Override
+    public User get(String id) {return userDao.get(id);}
+    @Override
+    public List<User> getAll() {return userDao.getAll();}
+    @Override
+    public void deleteAll() {userDao.deleteAll();}
+    @Override
+    public void update(User user) {userDao.update(user);}
+    //--------------------
+
     public void upgradeLevels() {
         List<User> users = userDao.getAll();
         for (User user : users) {
@@ -56,13 +75,6 @@ public class UserServiceImpl implements UserService {
         mailMessage.setText("사용자님의 등급이 " + user.getLevel().name() + "로 업그레이드 되었습니다.");
 
         this.mailSender.send(mailMessage);
-    }
-
-    public void add(User user) {
-        if (user.getLevel() == null) {
-            user.setLevel(Level.BASIC);
-        }
-        userDao.add(user);
     }
 
     /*
