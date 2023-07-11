@@ -40,8 +40,7 @@
     </bean>
 
     <aop:config>
-        <aop:advisor advice-ref="transactionAdvice" pointcut="execution(* *..*ServiceImpl.upgrade*(..))"/>
-        <aop:advisor advice-ref="batchTxAdvice" pointcut="execution(a.b.*batchJob.*.(..))"/>
+        <aop:advisor advice-ref="transactionAdvice" pointcut="bean(*Service)"/>
     </aop:config>
 
     <!--아래 태그에 의해 TransactionInterceptor 빈이 등록된다.-->
@@ -55,9 +54,4 @@
         </tx:attributes>
     </tx:advice>
 
-    <tx:advice id="batchTxAdvice">
-        <tx:attributes>
-            <tx:method name="asdf*"/>
-        </tx:attributes>
-    </tx:advice>
 </beans>
