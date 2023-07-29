@@ -36,11 +36,16 @@
     </bean>
 
     <bean id="sqlService" class="com.springbook.user.sqlservice.XmlSqlService">
-        <!--프로퍼티는 자기 자신을 참조할 수 있다. 수정자 메서드로 주입만 가능하면 된다.-->
-        <property name="sqlReader" ref="sqlService"/>
-        <property name="sqlRegistry" ref="sqlService"/>
+        <!--독립시킨 reader, registry 빈을 참조하도록 ref 수정.-->
+        <property name="sqlReader" ref="sqlReader"/>
+        <property name="sqlRegistry" ref="sqlRegistry"/>
+    </bean>
+
+    <bean id="sqlReader" class="com.springbook.user.sqlservice.JaxbXmlSqlReader">
         <property name="sqlmapFile" value="sqlmap.xml"/>
     </bean>
+
+    <bean id="sqlRegistry" class="com.springbook.user.sqlservice.HashMapSqlRegistry"/>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
