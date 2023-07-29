@@ -35,8 +35,7 @@
         <property name="sqlService" ref="sqlService"/>
     </bean>
 
-    <bean id="sqlService" class="com.springbook.user.sqlservice.XmlSqlService">
-        <!--독립시킨 reader, registry 빈을 참조하도록 ref 수정.-->
+    <bean id="sqlService" class="com.springbook.user.sqlservice.BaseSqlService">
         <property name="sqlReader" ref="sqlReader"/>
         <property name="sqlRegistry" ref="sqlRegistry"/>
     </bean>
