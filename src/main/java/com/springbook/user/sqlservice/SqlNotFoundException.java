@@ -1,6 +1,6 @@
 package com.springbook.user.sqlservice;
 
-public class SqlNotFoundException extends RuntimeException {
+public class SqlNotFoundException extends SqlRetrievalFailureException {
 
     public SqlNotFoundException(String message) {
         super(message);
