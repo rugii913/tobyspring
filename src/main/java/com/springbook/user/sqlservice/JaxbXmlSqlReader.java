@@ -11,8 +11,10 @@ import java.io.InputStream;
 
 public class JaxbXmlSqlReader implements SqlReader {
 
+    private static final String DEFAULT_SQLMAP_FILE = "sqlmap.xml";
+
     // sqlmapFile은 SqlReader의 특정 구현 방법에 종속되는 프로퍼티가 된다.
-    private String sqlmapFile;
+    private String sqlmapFile = DEFAULT_SQLMAP_FILE;
 
     public void setSqlmapFile(String sqlmapFile) {
         this.sqlmapFile = sqlmapFile;
