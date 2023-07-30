@@ -12,6 +12,8 @@ import java.io.IOException;
 
 public class OxmSqlService implements SqlService {
 
+    private final BaseSqlService baseSqlService = new BaseSqlService();
+    // -> SqlService의 실제 구현 부분을 위임할 대상인 BaseSqlService를 인스턴스 변수로 정의해둔다.
     private final OxmSqlReader oxmSqlReader = new OxmSqlReader();
     // -> final이므로 변경 불가능하다. OxmSqlService와 OxmSqlReader는 강하게 결합돼서 하나의 빈으로 등록되고 한 번에 설정할 수 있다.
     private SqlRegistry sqlRegistry = new HashMapSqlRegistry();
@@ -33,18 +35,19 @@ public class OxmSqlService implements SqlService {
     }
 
     // SqlService 인터페이스에 대한 구현 코드는 BaseSqlService와 같다. (loadSql() 및 getSql(~)을 뜻함)
+    // => 리스트 7-54에서 코드 중복을 제거하기 위해 BaseSqlService을 이용하고 중복 코드를 삭제함
     @PostConstruct
     public void loadSql() {
-        this.oxmSqlReader.read(this.sqlRegistry);
+        // OxmSqlService의 프로퍼티를 통해서 초기화된 SqlReader와 SqlRegistry를 실제 작업을 위임할 대상인 baseSqlService에 주입한다.
+        this.baseSqlService.setSqlReader(this.oxmSqlReader);
+        this.baseSqlService.setSqlRegistry(this.sqlRegistry);
+        // SQL을 등록하는 초기화 작업을 baseSqlService에 위임한다.
+        this.baseSqlService.loadSql();
     }
 
     @Override
     public String getSql(String key) throws SqlRetrievalFailureException {
-        try {
-            return this.sqlRegistry.findSql(key);
-        } catch (SqlNotFoundException e) {
-            throw new SqlRetrievalFailureException(e.getMessage(), e);
-        }
+        return this.baseSqlService.getSql(key);
     }
 
     private class OxmSqlReader implements SqlReader { // private 멤버 클래스로 정의 - 톱레벨 클래스인 OxmSqlService만이 사용할 수 있다.
