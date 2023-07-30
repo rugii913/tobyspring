@@ -35,13 +35,13 @@
         <property name="sqlService" ref="sqlService"/>
     </bean>
 
-    <bean id="sqlService" class="com.springbook.user.sqlservice.DefaultSqlService"/>
-
-<!--    <bean id="sqlReader" class="com.springbook.user.sqlservice.JaxbXmlSqlReader">
-        <property name="sqlmapFile" value="sqlmap.xml"/>
+    <bean id="sqlService" class="com.springbook.user.sqlservice.OxmSqlService">
+        <property name="unmarshaller" ref="unmarshaller"/>
     </bean>
 
-    <bean id="sqlRegistry" class="com.springbook.user.sqlservice.HashMapSqlRegistry"/>-->
+    <bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+        <property name="contextPath" value="com.springbook.user.sqlservice.jaxb"/> <!--이 디렉토리의 sqlmap.xml 사용-->
+    </bean>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
