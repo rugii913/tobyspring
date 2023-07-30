@@ -38,6 +38,10 @@ dependencies {
 	// 		=> 이건 이미 외부 라이브러리 있어서 가져오지 않음 - org.springframework:spring-context-support:5.3.28
 	// https://mvnrepository.com/artifact/org.springframework/spring-context-support
 	// implementation 'org.springframework:spring-context-support:~~~~~~RELEASE'
+
+	// OXM 서비스 추상화 관련 p.600
+	// https://mvnrepository.com/artifact/org.springframework/spring-oxm
+	implementation group: 'org.springframework', name: 'spring-oxm', version: '5.3.28'
 }
 
 tasks.named('test') {
