@@ -42,6 +42,12 @@ dependencies {
 	// OXM 서비스 추상화 관련 p.600
 	// https://mvnrepository.com/artifact/org.springframework/spring-oxm
 	implementation group: 'org.springframework', name: 'spring-oxm', version: '5.3.28'
+
+	// 내장형 DB p.633
+	// https://mvnrepository.com/artifact/org.hsqldb/hsqldb
+	testImplementation 'org.hsqldb:hsqldb:1.8.0.10'
+
+
 }
 
 tasks.named('test') {
