@@ -12,7 +12,9 @@
                            http://www.springframework.org/schema/context
                            http://www.springframework.org/schema/context/spring-context-3.0.xsd
                            http://www.springframework.org/schema/tx
-                           http://www.springframework.org/schema/tx/spring-tx-2.5.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+                           http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+                           http://www.springframework.org/schema/jdbc
+                           http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
         <property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
@@ -42,7 +44,8 @@
         <property name="sqlRegistry" ref="sqlRegistry"/>
     </bean>
 
-    <bean id="sqlRegistry" class="com.springbook.user.sqlservice.updatable.ConcurrentHashMapSqlRegistry">
+    <bean id="sqlRegistry" class="com.springbook.user.sqlservice.updatable.EmbeddedDbSqlRegistry">
+        <property name="dataSource" ref="embeddedDatabase"/>
     </bean>
 
     <bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
@@ -65,8 +68,8 @@
     <context:annotation-config/>
     <!--코드의 어노테이션을 이용해서 부가적인 빈 설정 또는 초기화 작업을 해주는 후처리기를 등록-->
 
-    <!--p.634 HSQL 내장형 DB 설정-->
+    <!--p.634 HSQL 내장형 DB 설정, p.640 자세한 코드-->
     <jdbc:embedded-database id="embeddedDatabase" type="HSQL">
-        <jdbc:script location="classpath:schema.sql"/>
+        <jdbc:script location="classpath:com/springbook/user/sqlservice/updatable/sqlRegistrySchema.sql"/>
     </jdbc:embedded-database>
 </beans>
