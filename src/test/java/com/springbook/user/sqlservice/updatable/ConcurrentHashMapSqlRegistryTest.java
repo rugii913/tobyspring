@@ -1,5 +1,8 @@
-package com.springbook.user.sqlservice;
+package com.springbook.user.sqlservice.updatable;
 
+import com.springbook.user.sqlservice.SqlNotFoundException;
+import com.springbook.user.sqlservice.SqlUpdateFailureException;
+import com.springbook.user.sqlservice.UpdatableSqlRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -63,6 +66,6 @@ public class ConcurrentHashMapSqlRegistryTest {
     @Test
     // 존재하지 않는 키의 SQL을 변경하려고 시도할 때 예외가 발생하는 것을 검증한다.
     public void updateWithNotExistingKey() {
-        sqlRegistry.updateSql("SQL9999!@#$", "Modified2");
+        assertThatThrownBy(() -> sqlRegistry.updateSql("SQL9999!@#$", "Modified2")).isExactlyInstanceOf(SqlUpdateFailureException.class);
     }
 }
