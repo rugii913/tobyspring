@@ -44,6 +44,13 @@
         <!--file: 접두어를 사용하면 파일 시스템의 루트 디렉토리부터 시작하는 파일 위치를 나타낸다.-->
         <!--<property name="sqlmap" value="http://www.epril.com/resources/sqlmap.xml"/>-->
         <!--http: 접두어로 HTTP 프로토콜로 접근 가능한 웹 리소스를 가져올 수도 있다.-->
+        <property name="sqlRegistry" ref="sqlRegistry"/>
+    </bean>
+
+    <bean id="sqlRegistry" class="com.springbook.user.sqlservice.MyUpdatableSqlRegistry"/>
+
+    <bean id="sqlAdminService" class="com.springbook.user.sqlservice.SqlAdminService">
+        <property name="updatableSqlRegistry" ref="sqlRegistry"/>
     </bean>
 
     <bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
