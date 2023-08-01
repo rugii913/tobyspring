@@ -29,7 +29,6 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 @Configuration
-@ImportResource("/test-applicationContext.xml")
 @EnableTransactionManagement
 public class TestApplicationContext {
 
