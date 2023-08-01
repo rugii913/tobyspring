@@ -32,6 +32,9 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 public class TestApplicationContext {
 
+    /*
+    * DB 연결과 트랜잭션
+    * */
     @Bean
     public DataSource dataSource() {
         SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
@@ -50,6 +53,9 @@ public class TestApplicationContext {
         return tm;
     }
 
+    /*
+    * 어플리케이션 로직 & 테스트
+    * */
     @Bean
     public UserDao userDao() {
         UserDaoJdbc dao = new UserDaoJdbc();
@@ -79,6 +85,10 @@ public class TestApplicationContext {
         return new DummyMailSender();
     }
 
+    
+    /*
+    * SQL 서비스 
+    * */
     @Bean
     public SqlService sqlService() {
         OxmSqlService sqlService = new OxmSqlService();
