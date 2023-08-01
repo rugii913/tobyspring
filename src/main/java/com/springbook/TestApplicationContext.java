@@ -17,6 +17,8 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.mail.MailSender;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -28,9 +30,6 @@ import javax.sql.DataSource;
 @Configuration
 @ImportResource("/test-applicationContext.xml")
 public class TestApplicationContext {
-
-    @Resource
-    DataSource embeddedDatabase;
 
     @Bean
     public DataSource dataSource() {
@@ -90,7 +89,7 @@ public class TestApplicationContext {
     @Bean
     public SqlRegistry sqlRegistry() {
         EmbeddedDbSqlRegistry sqlRegistry = new EmbeddedDbSqlRegistry();
-        sqlRegistry.setDataSource(this.embeddedDatabase);
+        sqlRegistry.setDataSource(embeddedDatabase());
         return sqlRegistry;
     }
 
@@ -99,5 +98,14 @@ public class TestApplicationContext {
         Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         marshaller.setContextPath("com.springbook.user.sqlservice.jaxb"); // 이 디렉토리의 sqlmap.xml 사용
         return marshaller;
+    }
+
+    @Bean
+    public DataSource embeddedDatabase() {
+        return new EmbeddedDatabaseBuilder()
+                .setName("embeddedDatabase")
+                .setType(EmbeddedDatabaseType.HSQL)
+                .addScript("classpath:com/springbook/user/sqlservice/updatable/sqlRegistrySchema.sql")
+                .build();
     }
 }

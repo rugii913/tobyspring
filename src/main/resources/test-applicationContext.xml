@@ -19,9 +19,4 @@
     <!--후처리기 등록 / cf. 스프링 부트에서는 별도로 등록하지 않아도 이미 존재한다...-->
     <tx:annotation-driven/>
     <!--@Transactional이 붙은 타입과 메서드에 트랜잭션 부가기능을 담은 프록시를 추가하도록 만들어주는 후처리기 등록-->
-
-    <!--p.634 HSQL 내장형 DB 설정, p.640 자세한 코드-->
-    <jdbc:embedded-database id="embeddedDatabase" type="HSQL">
-        <jdbc:script location="classpath:com/springbook/user/sqlservice/updatable/sqlRegistrySchema.sql"/>
-    </jdbc:embedded-database>
 </beans>
