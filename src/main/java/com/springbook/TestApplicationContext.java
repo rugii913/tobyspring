@@ -58,10 +58,7 @@ public class TestApplicationContext {
     * */
     @Bean
     public UserDao userDao() {
-        UserDaoJdbc dao = new UserDaoJdbc();
-        dao.setDataSource(dataSource());
-        dao.setSqlService(sqlService());
-        return dao;
+        return new UserDaoJdbc();
     }
 
     @Bean
@@ -87,7 +84,7 @@ public class TestApplicationContext {
 
     
     /*
-    * SQL 서비스 
+    * SQL 서비스
     * */
     @Bean
     public SqlService sqlService() {
