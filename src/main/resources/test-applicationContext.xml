@@ -65,9 +65,6 @@
     <tx:annotation-driven/>
     <!--@Transactional이 붙은 타입과 메서드에 트랜잭션 부가기능을 담은 프록시를 추가하도록 만들어주는 후처리기 등록-->
 
-    <context:annotation-config/>
-    <!--코드의 어노테이션을 이용해서 부가적인 빈 설정 또는 초기화 작업을 해주는 후처리기를 등록-->
-
     <!--p.634 HSQL 내장형 DB 설정, p.640 자세한 코드-->
     <jdbc:embedded-database id="embeddedDatabase" type="HSQL">
         <jdbc:script location="classpath:com/springbook/user/sqlservice/updatable/sqlRegistrySchema.sql"/>
