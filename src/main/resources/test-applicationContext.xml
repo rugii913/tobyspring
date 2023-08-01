@@ -16,21 +16,6 @@
                            http://www.springframework.org/schema/jdbc
                            http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
-    <!--p.483 6-53 ProxyFactoryBean을 제거한 후의 빈 설정-->
-    <bean id="userService" class="com.springbook.user.service.UserServiceImpl">
-        <property name="userDao" ref="userDao"/>
-        <property name="mailSender" ref="mailSender"/>
-    </bean>
-
-    <!--스태틱 멤버 클래스는 $로 지정한다.-->
-    <bean id="testUserService" class="com.springbook.user.service.UserServiceImpl$TestUserService"
-        parent="userService"/>
-
-    <bean id="userDao" class="com.springbook.user.dao.UserDaoJdbc">
-        <property name="dataSource" ref="dataSource"/>
-        <property name="sqlService" ref="sqlService"/>
-    </bean>
-
     <bean id="sqlService" class="com.springbook.user.sqlservice.OxmSqlService">
         <property name="unmarshaller" ref="unmarshaller"/>
         <!--디폴트로 준비된 HashMapSqlRegistry 대신 외부에 따로 정의한 SQL 레지스트리를 사용하도록 프로퍼티를 명시적으로 지정한다.-->
@@ -44,11 +29,6 @@
     <bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
         <property name="contextPath" value="com.springbook.user.sqlservice.jaxb"/> <!--이 디렉토리의 sqlmap.xml 사용-->
     </bean>
-
-    <bean id="mailSender" class="com.springbook.user.service.DummyMailSender">
-        <property name="host" value="mail.server.com"/>
-    </bean>
-
 
     <!--후처리기 등록 / cf. 스프링 부트에서는 별도로 등록하지 않아도 이미 존재한다...-->
     <tx:annotation-driven/>
