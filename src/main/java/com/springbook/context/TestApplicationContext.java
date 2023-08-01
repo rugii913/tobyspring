@@ -12,6 +12,7 @@ import com.springbook.user.sqlservice.SqlService;
 import com.springbook.user.sqlservice.updatable.EmbeddedDbSqlRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -30,7 +31,11 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableTransactionManagement
+@ComponentScan(basePackages = "com.springbook.user")
 public class TestApplicationContext {
+
+    @Autowired
+    UserDao userDao;
 
     /*
     * DB 연결과 트랜잭션
@@ -57,14 +62,9 @@ public class TestApplicationContext {
     * 어플리케이션 로직 & 테스트
     * */
     @Bean
-    public UserDao userDao() {
-        return new UserDaoJdbc();
-    }
-
-    @Bean
     public UserService userService() {
         UserServiceImpl service = new UserServiceImpl();
-        service.setUserDao(userDao());
+        service.setUserDao(this.userDao);
         service.setMailSender(mailSender());
         return service;
     }
@@ -72,7 +72,7 @@ public class TestApplicationContext {
     @Bean
     public UserService testUserService() {
         UserServiceImpl.TestUserService testUserService = new UserServiceImpl.TestUserService();
-        testUserService.setUserDao(userDao());
+        testUserService.setUserDao(this.userDao);
         testUserService.setMailSender(mailSender());
         return testUserService;
     }

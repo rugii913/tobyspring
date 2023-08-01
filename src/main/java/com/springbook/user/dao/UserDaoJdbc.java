@@ -6,11 +6,13 @@ import com.springbook.user.sqlservice.SqlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class UserDaoJdbc implements UserDao {
 
     private RowMapper<User> userMapper = (rs, rowNum) -> {
