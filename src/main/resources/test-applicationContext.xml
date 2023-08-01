@@ -45,10 +45,6 @@
         <property name="contextPath" value="com.springbook.user.sqlservice.jaxb"/> <!--이 디렉토리의 sqlmap.xml 사용-->
     </bean>
 
-    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-
     <bean id="mailSender" class="com.springbook.user.service.DummyMailSender">
         <property name="host" value="mail.server.com"/>
     </bean>
