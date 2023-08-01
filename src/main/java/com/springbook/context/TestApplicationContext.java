@@ -1,4 +1,4 @@
-package com.springbook;
+package com.springbook.context;
 
 import com.mysql.cj.jdbc.Driver;
 import com.springbook.user.dao.UserDao;

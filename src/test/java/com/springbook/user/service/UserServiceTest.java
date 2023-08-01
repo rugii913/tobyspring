@@ -1,6 +1,6 @@
 package com.springbook.user.service;
 
-import com.springbook.TestApplicationContext;
+import com.springbook.context.TestApplicationContext;
 import com.springbook.user.dao.UserDao;
 import com.springbook.user.domain.Level;
 import com.springbook.user.domain.User;
