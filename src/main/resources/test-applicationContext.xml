@@ -16,13 +16,6 @@
                            http://www.springframework.org/schema/jdbc
                            http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
-        <property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost/testdb"/>
-        <property name="username" value="spring"/>
-        <property name="password" value="book"/>
-    </bean>
-
     <!--p.483 6-53 ProxyFactoryBean을 제거한 후의 빈 설정-->
     <bean id="userService" class="com.springbook.user.service.UserServiceImpl">
         <property name="userDao" ref="userDao"/>
