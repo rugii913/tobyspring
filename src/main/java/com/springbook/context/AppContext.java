@@ -30,11 +30,6 @@ import javax.sql.DataSource;
 @Import({SqlServiceContext.class})
 public class AppContext {
 
-    @Autowired
-    UserDao userDao;
-    @Autowired
-    MailSender mailSender;
-
     /*
     * DB 연결과 트랜잭션
     * */
@@ -54,17 +49,6 @@ public class AppContext {
         DataSourceTransactionManager tm = new DataSourceTransactionManager();
         tm.setDataSource(dataSource());
         return tm;
-    }
-
-    /*
-    * 어플리케이션 로직 & 테스트
-    * */
-    @Bean
-    public UserService userService() {
-        UserServiceImpl service = new UserServiceImpl();
-        service.setUserDao(this.userDao);
-        service.setMailSender(this.mailSender);
-        return service;
     }
 
     @Configuration
@@ -93,5 +77,4 @@ public class AppContext {
             return new DummyMailSender();
         }
     }
-
 }
