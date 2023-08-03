@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -168,5 +169,15 @@ class UserDaoTest {
         assertThat(user1.getLevel()).isEqualTo(user2.getLevel());
         assertThat(user1.getLogin()).isEqualTo(user2.getLogin());
         assertThat(user1.getRecommend()).isEqualTo(user2.getRecommend());
+    }
+
+    @Autowired
+    DefaultListableBeanFactory bf;
+
+    @Test
+    public void beans() {
+        for (String beanDefinitionName : bf.getBeanDefinitionNames()) {
+            System.out.println(beanDefinitionName + "\t " + bf.getBean(beanDefinitionName).getClass().getName());
+        }
     }
 }
