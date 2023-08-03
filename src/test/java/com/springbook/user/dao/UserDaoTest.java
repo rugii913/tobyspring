@@ -170,14 +170,4 @@ class UserDaoTest {
         assertThat(user1.getLogin()).isEqualTo(user2.getLogin());
         assertThat(user1.getRecommend()).isEqualTo(user2.getRecommend());
     }
-
-    @Autowired
-    DefaultListableBeanFactory bf;
-
-    @Test
-    public void beans() {
-        for (String beanDefinitionName : bf.getBeanDefinitionNames()) {
-            System.out.println(beanDefinitionName + "\t " + bf.getBean(beanDefinitionName).getClass().getName());
-        }
-    }
 }
