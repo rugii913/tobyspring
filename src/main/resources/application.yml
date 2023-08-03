@@ -1,0 +1,14 @@
+spring:
+  profiles:
+    active: test
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+---
+spring:
+  config:
+    activate:
+      on-profile: production

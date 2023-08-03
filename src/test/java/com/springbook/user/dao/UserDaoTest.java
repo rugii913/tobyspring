@@ -1,5 +1,6 @@
 package com.springbook.user.dao;
 
+import com.springbook.context.AppContext;
 import com.springbook.user.domain.Level;
 import com.springbook.user.domain.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,8 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.sql.DataSource;
@@ -21,6 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = AppContext.class)
+@ActiveProfiles("test")
 class UserDaoTest {
 
     @Autowired

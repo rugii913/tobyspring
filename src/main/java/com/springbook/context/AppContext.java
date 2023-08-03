@@ -10,10 +10,7 @@ import com.springbook.user.sqlservice.SqlRegistry;
 import com.springbook.user.sqlservice.SqlService;
 import com.springbook.user.sqlservice.updatable.EmbeddedDbSqlRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.*;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -34,6 +31,8 @@ public class AppContext {
 
     @Autowired
     UserDao userDao;
+    @Autowired
+    MailSender mailSender;
 
     /*
     * DB 연결과 트랜잭션
@@ -63,7 +62,7 @@ public class AppContext {
     public UserService userService() {
         UserServiceImpl service = new UserServiceImpl();
         service.setUserDao(this.userDao);
-        service.setMailSender(mailSender());
+        service.setMailSender(this.mailSender);
         return service;
     }
 }
