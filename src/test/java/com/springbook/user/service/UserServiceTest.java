@@ -1,7 +1,5 @@
 package com.springbook.user.service;
 
-import com.springbook.context.AppContext;
-import com.springbook.context.TestAppContext;
 import com.springbook.user.dao.UserDao;
 import com.springbook.user.domain.Level;
 import com.springbook.user.domain.User;
@@ -16,7 +14,6 @@ import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
@@ -34,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {TestAppContext.class, AppContext.class})
 @Transactional
 //@Rollback(value = false)
 @Commit
