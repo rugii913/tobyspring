@@ -55,7 +55,7 @@ public class OxmSqlService implements SqlService {
     private class OxmSqlReader implements SqlReader { // private 멤버 클래스로 정의 - 톱레벨 클래스인 OxmSqlService만이 사용할 수 있다.
 
         private Unmarshaller unmarshaller;
-        private Resource sqlmap = new ClassPathResource("sqlmap.xml", UserDao.class);
+        private Resource sqlmap = new ClassPathResource("/sqlmap.xml");
         // -> SQL 매핑정보 소스의 타입을 Resource로 변경한다.
         // -> 디폴트 파일은 기존과 같지만 이제는 Resource 구현 클래스인 ClassPathResource를 이용한다.
 

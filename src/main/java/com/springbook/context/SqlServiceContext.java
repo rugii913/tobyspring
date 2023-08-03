@@ -1,11 +1,13 @@
 package com.springbook.context;
 
+import com.springbook.user.dao.UserDao;
 import com.springbook.user.sqlservice.OxmSqlService;
 import com.springbook.user.sqlservice.SqlRegistry;
 import com.springbook.user.sqlservice.SqlService;
 import com.springbook.user.sqlservice.updatable.EmbeddedDbSqlRegistry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.oxm.Unmarshaller;
@@ -21,6 +23,7 @@ public class SqlServiceContext {
         OxmSqlService sqlService = new OxmSqlService();
         sqlService.setUnmarshaller(unmarshaller());
         sqlService.setSqlRegistry(sqlRegistry());
+        sqlService.setSqlmap(new ClassPathResource("sqlmap.xml", UserDao.class));
         return sqlService;
     }
 
