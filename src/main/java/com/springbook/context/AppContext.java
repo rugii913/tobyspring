@@ -11,6 +11,7 @@ import com.springbook.user.sqlservice.SqlService;
 import com.springbook.user.sqlservice.updatable.EmbeddedDbSqlRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -28,8 +29,11 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 @ComponentScan(basePackages = "com.springbook.user")
 @Import({SqlServiceContext.class})
-@PropertySource("/database.yml")
+@PropertySource("/database.properties")
 public class AppContext {
+
+    @Autowired
+    Environment env;
 
     /*
     * DB 연결과 트랜잭션
@@ -42,6 +46,11 @@ public class AppContext {
         dataSource.setUsername("spring");
         dataSource.setPassword("book");
 
+        System.out.println(env.getProperty("db.driverClass"));
+        System.out.println(env.getProperty("db.driverClass"));
+        System.out.println(env.getProperty("db.driverClass"));
+        System.out.println(env.getProperty("db.driverClass"));
+        System.out.println(env.getProperty("db.driverClass"));
         return dataSource;
     }
 
