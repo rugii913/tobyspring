@@ -4,6 +4,8 @@ import com.mysql.cj.jdbc.Driver;
 import com.springbook.user.service.DummyMailSender;
 import com.springbook.user.service.UserService;
 import com.springbook.user.service.UserServiceImpl;
+import com.springbook.user.sqlservice.config.SqlMapConfig;
+import com.springbook.user.sqlservice.config.UserSqlMapConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -52,6 +54,11 @@ public class AppContext {
         DataSourceTransactionManager tm = new DataSourceTransactionManager();
         tm.setDataSource(dataSource());
         return tm;
+    }
+
+    @Bean
+    public SqlMapConfig sqlMapConfig() {
+        return new UserSqlMapConfig();
     }
 
     @Configuration
