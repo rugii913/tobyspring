@@ -41,16 +41,25 @@ public class AppContext {
     @Bean
     public DataSource dataSource() {
         SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
-        dataSource.setDriverClass(Driver.class);
+
+/*        dataSource.setDriverClass(Driver.class);
         dataSource.setUrl("jdbc:mysql://localhost/testdb?characterEncoding=UTF-8");
         dataSource.setUsername("spring");
-        dataSource.setPassword("book");
+        dataSource.setPassword("book");*/
+        try {
+            dataSource.setDriverClass((Class<? extends Driver>) Class.forName(env.getProperty("db.driverClass")));
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        dataSource.setUrl(env.getProperty("db.url"));
+        dataSource.setUsername(env.getProperty("db.username"));
+        dataSource.setPassword(env.getProperty("db.password"));
 
-        System.out.println(env.getProperty("db.driverClass"));
-        System.out.println(env.getProperty("db.driverClass"));
-        System.out.println(env.getProperty("db.driverClass"));
-        System.out.println(env.getProperty("db.driverClass"));
-        System.out.println(env.getProperty("db.driverClass"));
+        System.out.println(env.getProperty("db.username"));
+        System.out.println(env.getProperty("username"));
+        System.out.println(env.getProperty("db.password"));
+        System.out.println(env.getProperty("password"));
+
         return dataSource;
     }
 
