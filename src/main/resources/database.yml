@@ -1,0 +1,5 @@
+db:
+  driverClass: com.mysql.cj.jdbc.Driver
+  url: jdbc:mysql://localhost/testdb?characterEncoding=UTF-8
+  username: spring
+  password: book

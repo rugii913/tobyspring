@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 @ComponentScan(basePackages = "com.springbook.user")
 @Import({SqlServiceContext.class})
+@PropertySource("/database.yml")
 public class AppContext {
 
     /*
