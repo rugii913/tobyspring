@@ -5,8 +5,10 @@ import com.springbook.user.service.DummyMailSender;
 import com.springbook.user.service.UserService;
 import com.springbook.user.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.*;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
@@ -24,8 +26,15 @@ import javax.sql.DataSource;
 @PropertySource("/database.properties")
 public class AppContext {
 
-    @Autowired
-    Environment env;
+    @Value("${db.driverClass}") Class<? extends Driver> driverClass;
+    @Value("${db.url}") String url;
+    @Value("${db.username}") String username;
+    @Value("${db.password}") String password;
+
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
 
     /*
     * DB 연결과 트랜잭션
@@ -35,18 +44,10 @@ public class AppContext {
     public DataSource dataSource() {
         SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
 
-/*        dataSource.setDriverClass(Driver.class);
-        dataSource.setUrl("jdbc:mysql://localhost/testdb?characterEncoding=UTF-8");
-        dataSource.setUsername("spring");
-        dataSource.setPassword("book");*/
-        try {
-            dataSource.setDriverClass((Class<? extends Driver>) Class.forName(env.getProperty("db.driverClass")));
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        dataSource.setUrl(env.getProperty("db.url"));
-        dataSource.setUsername(env.getProperty("db.username"));
-        dataSource.setPassword(env.getProperty("db.password"));
+        dataSource.setDriverClass(this.driverClass);
+        dataSource.setUrl(this.url);
+        dataSource.setUsername(this.username);
+        dataSource.setPassword(this.password);
 
         return dataSource;
     }
