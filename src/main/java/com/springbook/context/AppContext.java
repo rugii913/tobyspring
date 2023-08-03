@@ -1,6 +1,7 @@
 package com.springbook.context;
 
 import com.mysql.cj.jdbc.Driver;
+import com.springbook.user.dao.UserDao;
 import com.springbook.user.service.DummyMailSender;
 import com.springbook.user.service.UserService;
 import com.springbook.user.service.UserServiceImpl;
@@ -12,6 +13,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.mail.MailSender;
@@ -26,7 +29,7 @@ import javax.sql.DataSource;
 @ComponentScan(basePackages = "com.springbook.user")
 @Import({SqlServiceContext.class})
 @PropertySource("/database.properties")
-public class AppContext {
+public class AppContext implements SqlMapConfig {
 
     @Value("${db.driverClass}") Class<? extends Driver> driverClass;
     @Value("${db.url}") String url;
@@ -56,9 +59,9 @@ public class AppContext {
         return tm;
     }
 
-    @Bean
-    public SqlMapConfig sqlMapConfig() {
-        return new UserSqlMapConfig();
+    @Override
+    public Resource getSqlMapResource() {
+        return new ClassPathResource("sqlmap.xml", UserDao.class);
     }
 
     @Configuration
