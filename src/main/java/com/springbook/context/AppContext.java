@@ -1,25 +1,17 @@
 package com.springbook.context;
 
 import com.mysql.cj.jdbc.Driver;
-import com.springbook.user.dao.UserDao;
 import com.springbook.user.service.DummyMailSender;
 import com.springbook.user.service.UserService;
 import com.springbook.user.service.UserServiceImpl;
-import com.springbook.user.sqlservice.OxmSqlService;
-import com.springbook.user.sqlservice.SqlRegistry;
-import com.springbook.user.sqlservice.SqlService;
-import com.springbook.user.sqlservice.updatable.EmbeddedDbSqlRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.oxm.Unmarshaller;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -39,6 +31,7 @@ public class AppContext {
     * DB 연결과 트랜잭션
     * */
     @Bean
+    @ConfigurationProperties()
     public DataSource dataSource() {
         SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
 
@@ -54,11 +47,6 @@ public class AppContext {
         dataSource.setUrl(env.getProperty("db.url"));
         dataSource.setUsername(env.getProperty("db.username"));
         dataSource.setPassword(env.getProperty("db.password"));
-
-        System.out.println(env.getProperty("db.username"));
-        System.out.println(env.getProperty("username"));
-        System.out.println(env.getProperty("db.password"));
-        System.out.println(env.getProperty("password"));
 
         return dataSource;
     }
