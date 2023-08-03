@@ -1,6 +1,7 @@
 package com.springbook.user.service;
 
-import com.springbook.context.TestApplicationContext;
+import com.springbook.context.AppContext;
+import com.springbook.context.TestAppContext;
 import com.springbook.user.dao.UserDao;
 import com.springbook.user.domain.Level;
 import com.springbook.user.domain.User;
@@ -33,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestApplicationContext.class)
+@ContextConfiguration(classes = {TestAppContext.class, AppContext.class})
 @Transactional
 //@Rollback(value = false)
 @Commit

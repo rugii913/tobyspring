@@ -2,7 +2,6 @@ package com.springbook.context;
 
 import com.mysql.cj.jdbc.Driver;
 import com.springbook.user.dao.UserDao;
-import com.springbook.user.dao.UserDaoJdbc;
 import com.springbook.user.service.DummyMailSender;
 import com.springbook.user.service.UserService;
 import com.springbook.user.service.UserServiceImpl;
@@ -14,10 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.mail.MailSender;
@@ -26,13 +23,12 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(basePackages = "com.springbook.user")
-public class TestApplicationContext {
+public class AppContext {
 
     @Autowired
     UserDao userDao;
