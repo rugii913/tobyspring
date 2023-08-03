@@ -66,17 +66,4 @@ public class AppContext {
         service.setMailSender(mailSender());
         return service;
     }
-
-    @Bean
-    public UserService testUserService() {
-        UserServiceImpl.TestUserService testUserService = new UserServiceImpl.TestUserService();
-        testUserService.setUserDao(this.userDao);
-        testUserService.setMailSender(mailSender());
-        return testUserService;
-    }
-
-    @Bean
-    public MailSender mailSender() {
-        return new DummyMailSender();
-    }
 }
