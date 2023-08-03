@@ -27,7 +27,7 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(basePackages = "com.springbook.user")
-@Import({SqlServiceContext.class})
+@EnableSqlService
 @PropertySource("/database.properties")
 public class AppContext implements SqlMapConfig {
 
@@ -35,6 +35,11 @@ public class AppContext implements SqlMapConfig {
     @Value("${db.url}") String url;
     @Value("${db.username}") String username;
     @Value("${db.password}") String password;
+
+    @Override
+    public Resource getSqlMapResource() {
+        return new ClassPathResource("sqlmap.xml", UserDao.class);
+    }
 
     /*
     * DB 연결과 트랜잭션
@@ -57,11 +62,6 @@ public class AppContext implements SqlMapConfig {
         DataSourceTransactionManager tm = new DataSourceTransactionManager();
         tm.setDataSource(dataSource());
         return tm;
-    }
-
-    @Override
-    public Resource getSqlMapResource() {
-        return new ClassPathResource("sqlmap.xml", UserDao.class);
     }
 
     @Configuration
