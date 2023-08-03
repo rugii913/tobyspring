@@ -31,11 +31,6 @@ public class AppContext {
     @Value("${db.username}") String username;
     @Value("${db.password}") String password;
 
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
-    }
-
     /*
     * DB 연결과 트랜잭션
     * */
