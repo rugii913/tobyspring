@@ -29,7 +29,7 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(basePackages = "com.springbook.user")
-@Import(SqlServiceContext.class)
+@Import({SqlServiceContext.class, TestAppContext.class, ProductionAppContext.class})
 public class AppContext {
 
     @Autowired
